@@ -113,24 +113,28 @@ namespace Scorganize
             // 
             this.LeftPage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftPage.Location = new System.Drawing.Point(3, 3);
+            this.LeftPage.MouseWheelMode = PdfiumViewer.MouseWheelMode.Zoom;
             this.LeftPage.Name = "LeftPage";
             this.LeftPage.Page = 0;
             this.LeftPage.Rotation = PdfiumViewer.PdfRotation.Rotate0;
             this.LeftPage.Size = new System.Drawing.Size(259, 397);
             this.LeftPage.TabIndex = 0;
             this.LeftPage.Text = "pdfRenderer1";
+            this.LeftPage.ZoomMax = 20D;
             this.LeftPage.ZoomMode = PdfiumViewer.PdfViewerZoomMode.FitBest;
             // 
             // RightPage
             // 
             this.RightPage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RightPage.Location = new System.Drawing.Point(268, 3);
+            this.RightPage.MouseWheelMode = PdfiumViewer.MouseWheelMode.Zoom;
             this.RightPage.Name = "RightPage";
             this.RightPage.Page = 0;
             this.RightPage.Rotation = PdfiumViewer.PdfRotation.Rotate0;
             this.RightPage.Size = new System.Drawing.Size(259, 397);
             this.RightPage.TabIndex = 1;
             this.RightPage.Text = "pdfRenderer1";
+            this.RightPage.ZoomMax = 20D;
             this.RightPage.ZoomMode = PdfiumViewer.PdfViewerZoomMode.FitBest;
             // 
             // toolStrip1

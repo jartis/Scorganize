@@ -701,11 +701,10 @@ namespace PdfiumViewer
 
                     e.Graphics.FillRectangle(Brushes.White, pageBounds);
 
-                    DrawPageImage(e.Graphics, page, pageBounds);
-
-                    var selectionInfo = _textSelectionState;
-                    if (selectionInfo != null)
-                        DrawTextSelection(e.Graphics, page, selectionInfo.GetNormalized());
+                    if (this.Page == page)
+                    {
+                        DrawPageImage(e.Graphics, page, pageBounds);
+                    }
                 }
             }
 

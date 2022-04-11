@@ -342,8 +342,10 @@ namespace Scorganize
                     }
                 }
             }
-
-            MainForm_TreeNodeClicked(sender, new TreeNodeMouseClickEventArgs(songNodes[random.Next(songNodes.Count)], MouseButtons.Left, 1, 0, 0));
+            if (songNodes.Count > 0)
+            {
+                MainForm_TreeNodeClicked(sender, new TreeNodeMouseClickEventArgs(songNodes[random.Next(songNodes.Count)], MouseButtons.Left, 1, 0, 0));
+            }
         }
     }
 }
