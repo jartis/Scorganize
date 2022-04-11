@@ -145,13 +145,15 @@ namespace Scorganize
 
     public class TreeTag
     {
+        public string Title { get; set; }
         public string Filename { get; set; }
         public int Page { get; set; }
 
         public TagType tagType { get; set; }
 
-        public TreeTag(string filename, int page, TagType tt)
+        public TreeTag(string title, string filename, int page, TagType tt)
         {
+            Title = title;
             Filename = filename;
             Page = page;
             tagType = tt;

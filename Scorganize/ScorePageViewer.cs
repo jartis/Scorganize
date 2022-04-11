@@ -447,46 +447,7 @@ namespace PdfiumViewer
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            switch ((e.KeyData) & Keys.KeyCode)
-            {
-                case Keys.A:
-                    if ((e.KeyData & Keys.Modifiers) == Keys.Control)
-                        SelectAll();
-                    break;
-
-                case Keys.C:
-                    if ((e.KeyData & Keys.Modifiers) == Keys.Control)
-                        CopySelection();
-                    break;
-            }
-
             base.OnKeyDown(e);
-        }
-
-        public void SelectAll()
-        {
-            _textSelectionState = new TextSelectionState()
-            {
-                StartPage = 0,
-                StartIndex = 0,
-                EndPage = Document.PageCount - 1,
-                EndIndex = Document.CountCharacters(Document.PageCount - 1) - 1
-            };
-
-            Invalidate();
-        }
-
-        public void SelectCurrentPage()
-        {
-            _textSelectionState = new TextSelectionState()
-            {
-                StartPage = Page,
-                StartIndex = 0,
-                EndPage = Page,
-                EndIndex = Document.CountCharacters(Page) - 1
-            };
-
-            Invalidate();
         }
 
         public void CopySelection()
@@ -619,21 +580,6 @@ namespace PdfiumViewer
 
                 offset += fullHeight;
             }
-        }
-
-        private List<PageLink> GetPageLinks(int page)
-        {
-            var pageCache = _pageCache[page];
-            if (pageCache.Links == null)
-            {
-                pageCache.Links = new List<PageLink>();
-                foreach (var link in Document.GetPageLinks(page, pageCache.Bounds.Size).Links)
-                {
-                    pageCache.Links.Add(new PageLink(link, BoundsFromPdf(new PdfRectangle(page, link.Bounds), false)));
-                }
-            }
-
-            return pageCache.Links;
         }
 
         private Rectangle GetScrollClientArea()
@@ -863,19 +809,6 @@ namespace PdfiumViewer
                     e.Location.X - offset.Width,
                     e.Location.Y - offset.Height
                 );
-
-                for (int page = _visiblePageStart; page <= _visiblePageEnd; page++)
-                {
-                    foreach (var link in GetPageLinks(page))
-                    {
-                        if (link.Bounds.Contains(location))
-                        {
-                            _cachedLink = link;
-                            e.Cursor = Cursors.Hand;
-                            return;
-                        }
-                    }
-                }
 
                 if (_cursorMode == PdfViewerCursorMode.TextSelection)
                 {
