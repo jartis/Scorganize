@@ -150,11 +150,11 @@ namespace Scorganize
             {
                 TreeNode bookNode = new TreeNode();
                 bookNode.Text = songbook.Title;
-                bookNode.Tag = new TreeTag(songbook.Filename, -1); // Sentinel for "open book"
+                bookNode.Tag = new TreeTag(songbook.Filename, -1, TagType.Book); // Sentinel for "open book"
                 foreach (Song song in songbook.Songs)
                 {
                     TreeNode songNode = new TreeNode();
-                    songNode.Tag = new TreeTag(songbook.Filename, song.Page);
+                    songNode.Tag = new TreeTag(songbook.Filename, song.Page, TagType.Song);
                     songNode.Text = song.Title;
                     bookNode.Nodes.Add(songNode);
                 }

@@ -11,7 +11,7 @@ namespace PdfiumViewer
     /// <summary>
     /// Control to render PDF documents.
     /// </summary>
-    public class PdfRenderer : PanningZoomingScrollControl
+    public class ScorePageViewer : PanningZoomingScrollControl
     {
         private static readonly Padding PageMargin = new Padding(4);
         private static readonly SolidBrush _textSelectionBrush = new SolidBrush(Color.FromArgb(90, Color.DodgerBlue));
@@ -21,7 +21,6 @@ namespace PdfiumViewer
         private double _documentScaleFactor;
         private bool _disposed;
         private double _scaleFactor;
-        private ShadeBorder _shadeBorder = new ShadeBorder();
         private int _suspendPaintCount;
         private ToolTip _toolTip;
         private PdfViewerZoomMode _zoomMode;
@@ -32,7 +31,6 @@ namespace PdfiumViewer
         private PageLink _cachedLink;
         private DragState _dragState;
         private PdfRotation _rotation;
-        private List<IPdfMarker>[] _markers;
         private PdfViewerCursorMode _cursorMode = PdfViewerCursorMode.Pan;
         private bool _isSelectingText = false;
         private MouseState _cachedMouseState = null;
@@ -218,23 +216,15 @@ namespace PdfiumViewer
         public PdfMarkerCollection Markers { get; }
 
         /// <summary>
-        /// Initializes a new instance of the PdfRenderer class.
+        /// Initializes a new instance of the ScorePageViewer class.
         /// </summary>
-        public PdfRenderer()
+        public ScorePageViewer()
         {
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
 
             TabStop = true;
 
             _toolTip = new ToolTip();
-
-            Markers = new PdfMarkerCollection();
-            Markers.CollectionChanged += Markers_CollectionChanged;
-        }
-
-        private void Markers_CollectionChanged(object sender, EventArgs e)
-        {
-            RedrawMarkers();
         }
 
         /// <summary>
@@ -426,7 +416,7 @@ namespace PdfiumViewer
         private Size GetScrollOffset()
         {
             var bounds = GetScrollClientArea();
-            int maxWidth = (int)(_maxWidth * _scaleFactor) + ShadeBorder.Size.Horizontal + PageMargin.Horizontal;
+            int maxWidth = (int)(_maxWidth * _scaleFactor) + PageMargin.Horizontal;
             int leftOffset = (HScroll ? DisplayRectangle.X : (bounds.Width - maxWidth) / 2) + maxWidth / 2;
             int topOffset = VScroll ? DisplayRectangle.Y : 0;
 
@@ -539,8 +529,6 @@ namespace PdfiumViewer
 
             _documentScaleFactor = _maxHeight != 0 ? (double)_maxWidth / _maxHeight : 0D;
 
-            _markers = null;
-
             UpdateScrollbars();
 
             Invalidate();
@@ -587,7 +575,7 @@ namespace PdfiumViewer
 
             _pageCacheValid = true;
 
-            int maxWidth = (int)(_maxWidth * _scaleFactor) + ShadeBorder.Size.Horizontal + PageMargin.Horizontal;
+            int maxWidth = (int)(_maxWidth * _scaleFactor) + PageMargin.Horizontal;
             int leftOffset = -maxWidth / 2;
 
             int offset = 0;
@@ -596,10 +584,10 @@ namespace PdfiumViewer
             {
                 var size = TranslateSize(Document.PageSizes[page]);
                 int height = (int)(size.Height * _scaleFactor);
-                int fullHeight = height + ShadeBorder.Size.Vertical + PageMargin.Vertical;
+                int fullHeight = height + PageMargin.Vertical;
                 int width = (int)(size.Width * _scaleFactor);
-                int maxFullWidth = (int)(_maxWidth * _scaleFactor) + ShadeBorder.Size.Horizontal + PageMargin.Horizontal;
-                int fullWidth = width + ShadeBorder.Size.Horizontal + PageMargin.Horizontal;
+                int maxFullWidth = (int)(_maxWidth * _scaleFactor) + PageMargin.Horizontal;
+                int fullWidth = width + PageMargin.Horizontal;
                 int thisLeftOffset = leftOffset + (maxFullWidth - fullWidth) / 2;
 
                 while (_pageCache.Count <= page)
@@ -617,16 +605,16 @@ namespace PdfiumViewer
 
                 pageCache.Links = null;
                 pageCache.Bounds = new Rectangle(
-                    thisLeftOffset + ShadeBorder.Size.Left + PageMargin.Left,
-                    offset + ShadeBorder.Size.Top + PageMargin.Top,
+                    thisLeftOffset + PageMargin.Left,
+                    offset + PageMargin.Top,
                     width,
                     height
                 );
                 pageCache.OuterBounds = new Rectangle(
                     thisLeftOffset,
                     offset,
-                    width + ShadeBorder.Size.Horizontal + PageMargin.Horizontal,
-                    height + ShadeBorder.Size.Vertical + PageMargin.Vertical
+                    width + PageMargin.Horizontal,
+                    height + PageMargin.Vertical
                 );
 
                 offset += fullHeight;
@@ -685,13 +673,13 @@ namespace PdfiumViewer
 
             if (zoomMode == PdfViewerZoomMode.FitHeight)
             {
-                int height = bounds.Height - ShadeBorder.Size.Vertical - PageMargin.Vertical;
+                int height = bounds.Height - PageMargin.Vertical;
 
                 _scaleFactor = ((double)height / _maxHeight) * Zoom;
             }
             else
             {
-                int width = bounds.Width - ShadeBorder.Size.Horizontal - PageMargin.Horizontal;
+                int width = bounds.Width - PageMargin.Horizontal;
 
                 _scaleFactor = ((double)width / _maxWidth) * Zoom;
             }
@@ -717,8 +705,6 @@ namespace PdfiumViewer
         {
             if (Document == null || _suspendPaintCount > 0 || !_pageCacheValid)
                 return;
-
-            EnsureMarkers();
 
             var offset = GetScrollOffset();
             var bounds = GetScrollClientArea();
@@ -770,10 +756,6 @@ namespace PdfiumViewer
                     e.Graphics.FillRectangle(Brushes.White, pageBounds);
 
                     DrawPageImage(e.Graphics, page, pageBounds);
-
-                    _shadeBorder.Draw(e.Graphics, pageBounds);
-
-                    DrawMarkers(e.Graphics, page);
 
                     var selectionInfo = _textSelectionState;
                     if (selectionInfo != null)
@@ -841,8 +823,8 @@ namespace PdfiumViewer
                 scaledHeight += (int)(size.Height * _scaleFactor);
             }
 
-            int height = (int)(scaledHeight + (ShadeBorder.Size.Vertical + PageMargin.Vertical) * Document.PageCount);
-            int width = (int)(_maxWidth * _scaleFactor + ShadeBorder.Size.Horizontal + PageMargin.Horizontal);
+            int height = (int)(scaledHeight + (PageMargin.Vertical) * Document.PageCount);
+            int width = (int)(_maxWidth * _scaleFactor + PageMargin.Horizontal);
             
             var center = new Point(
                 DisplayRectangle.Width / 2,
@@ -1186,44 +1168,6 @@ namespace PdfiumViewer
             base.SetZoom(zoom, null);
         }
 
-        private void RedrawMarkers()
-        {
-            _markers = null;
-
-            Invalidate();
-        }
-
-        private void EnsureMarkers()
-        {
-            if (_markers != null)
-                return;
-
-            _markers = new List<IPdfMarker>[_pageCache.Count];
-
-            foreach (var marker in Markers)
-            {
-                if (marker.Page < 0 || marker.Page >= _markers.Length)
-                    continue;
-
-                if (_markers[marker.Page] == null)
-                    _markers[marker.Page] = new List<IPdfMarker>();
-
-                _markers[marker.Page].Add(marker);
-            }
-        }
-
-        private void DrawMarkers(Graphics graphics, int page)
-        {
-            var markers = _markers[page];
-            if (markers == null)
-                return;
-
-            foreach (var marker in markers)
-            {
-                marker.Draw(this, graphics);
-            }
-        }
-
         /// <summary>
         /// Scroll the PDF bounds into view.
         /// </summary>
@@ -1264,12 +1208,6 @@ namespace PdfiumViewer
         {
             if (!_disposed && disposing)
             {
-                if (_shadeBorder != null)
-                {
-                    _shadeBorder.Dispose();
-                    _shadeBorder = null;
-                }
-
                 if (_toolTip != null)
                 {
                     _toolTip.Dispose();

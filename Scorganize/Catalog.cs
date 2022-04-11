@@ -148,10 +148,19 @@ namespace Scorganize
         public string Filename { get; set; }
         public int Page { get; set; }
 
-        public TreeTag(string filename, int page)
+        public TagType tagType { get; set; }
+
+        public TreeTag(string filename, int page, TagType tt)
         {
             Filename = filename;
             Page = page;
+            tagType = tt;
         }
+    }
+
+    public enum TagType
+    {
+        Song,
+        Book,
     }
 }
