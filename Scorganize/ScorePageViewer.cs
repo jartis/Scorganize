@@ -221,9 +221,7 @@ namespace PdfiumViewer
         public ScorePageViewer()
         {
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
-
             TabStop = true;
-
             _toolTip = new ToolTip();
         }
 

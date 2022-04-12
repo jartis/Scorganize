@@ -45,7 +45,7 @@ namespace Scorganize
 
         private void FilePickerButton_Click(object sender, EventArgs e)
         {
-            using (var form = new OpenFileDialog())
+            using (OpenFileDialog? form = new OpenFileDialog())
             {
                 DialogResult result = form.ShowDialog();
                 if (result == DialogResult.OK)

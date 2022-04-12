@@ -1,4 +1,5 @@
 using PdfSharpCore.Pdf;
+using System.Configuration;
 
 namespace Scorganize
 {
@@ -6,18 +7,44 @@ namespace Scorganize
     {
         public Catalog MainCatalog { get; set; }
 
-        private string CatFile = @"D:\scorgcat.dat";
+        private string CatFile = "";
         private List<TreeNode> nodeCache;
 
         public delegate void SetStatusDelegate(string str, int pct);
         public SetStatusDelegate SetStatus;
         private Random random;
-
+        private PdfiumViewer.PdfRenderer pdfRenderer;
+        private Graphics leftG;
+        private Graphics rightG;
+        private PdfiumViewer.PdfDocument curDoc;
         private int curPage = 1;
+        private Songbook curBook;
+        private AboutBox abt;
+
+        private void GetConfig()
+        {
+            if (Program.Conf.AppSettings.Settings.AllKeys.Contains("catfilepath"))
+            {
+                CatFile = Program.Conf.AppSettings.Settings["catfilepath"].Value;
+            }
+            else
+            {
+                CatFile = Path.Combine(Application.UserAppDataPath, "scorgcat.dat");
+                Program.Conf.AppSettings.Settings.Add("catfilepath", CatFile);
+                Program.Conf.Save();
+            }
+        }
 
         public MainForm()
         {
             InitializeComponent();
+
+            GetConfig();
+
+
+
+            this.KeyPreview = true;
+            this.KeyDown += new KeyEventHandler(MainForm_KeyDown);
             SetStatus = new SetStatusDelegate(_setStatus);
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(MainForm_DragEnter);
@@ -28,6 +55,109 @@ namespace Scorganize
             Cursor.Current = Cursors.Default;
             MainCatalog = new Catalog();
             random = new Random();
+            pdfRenderer = new PdfiumViewer.PdfRenderer();
+            leftG = LeftBox.CreateGraphics();
+            rightG = RightBox.CreateGraphics();
+            this.splitContainer1.SplitterMoved += new SplitterEventHandler((sender, e) => this.Invalidate());
+            this.PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
+            CatalogTreeView.KeyDown += CatalogTreeView_KeyDown;
+            this.MouseWheel += MainForm_MouseWheel;
+        }
+
+        private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            if (e.Delta < 0)
+            {
+                PageForward();
+            }
+            else if (e.Delta > 0)
+            {
+                PageBack();
+            }
+        }
+
+        private void CatalogTreeView_KeyDown(object? sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.PageUp:
+                case Keys.PageDown:
+                    e.Handled = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void MainForm_PreviewKeyDown(object? sender, PreviewKeyDownEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Down:
+                case Keys.Up:
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.PageDown:
+                case Keys.PageUp:
+                    e.IsInputKey = true;
+                    break;
+            }
+        }
+
+        private void MainForm_KeyDown(object? sender, KeyEventArgs e)
+        {
+            int pageChange = 0;
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                case Keys.Up:
+                case Keys.PageUp:
+                    PageBack();
+                    break;
+                case Keys.Right:
+                case Keys.Down:
+                case Keys.PageDown:
+                    PageForward();
+                    break;
+            }
+        }
+
+        private void PageForward()
+        {
+            if (curDoc != null)
+            {
+                curPage = Math.Min(curPage + 1, curDoc.PageCount - 1);
+                SetSongButtons();
+                Invalidate();
+            }
+        }
+
+        private void PageBack()
+        {
+            if (curDoc != null)
+            {
+                curPage = Math.Max(curPage - 1, 1);
+                SetSongButtons();
+                Invalidate();
+            }
+        }
+
+        private void SetSongButtons()
+        {
+            if (curBook.Songs.Any(s => s.Page == curPage))
+            {
+                RemoveSongButton.Visible = true;
+                AddSongButton.Visible = false;
+            }
+            else
+            {
+                RemoveSongButton.Visible = false;
+                AddSongButton.Visible = true;
+            }
         }
 
         private void PopContextMenu(object sender, TreeNodeMouseClickEventArgs e)
@@ -90,7 +220,7 @@ namespace Scorganize
                 if (confirmResult == DialogResult.Yes)
                 {
                     Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
-                    MainCatalog.Songbooks.Clear();
+                    book.Songs.Clear();
                     MainCatalog.Save(CatFile);
                     PopulateTreeView();
                 }
@@ -113,6 +243,7 @@ namespace Scorganize
             menuStrip.Items.Add(shiftBackItem);
             menuStrip.Items.Add(shiftForwardItem);
             menuStrip.Items.Add(new ToolStripSeparator());
+            menuStrip.Items.Add(deleteSongsItem);
             menuStrip.Items.Add(deleteItem);
             menuStrip.Show(this, e.Location);
         }
@@ -267,6 +398,16 @@ namespace Scorganize
             });
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (curDoc != null)
+            {
+                LeftBox.Image = curDoc.Render(curPage, LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
+                RightBox.Image = curDoc.Render(curPage + 1, RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
+            }
+            base.OnPaint(e);
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             MainCatalog = Catalog.Load(CatFile);
@@ -281,18 +422,22 @@ namespace Scorganize
             {
                 if (e.Node.Tag != null)
                 {
-                    PdfiumViewer.PdfDocument curDoc = PdfiumViewer.PdfDocument.Load(tag.Filename);
+                    if (curDoc != null)
+                    {
+                        curDoc.Dispose();
+                    }
+                    curBook = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
+                    curDoc = PdfiumViewer.PdfDocument.Load(tag.Filename);
                     curPage = 1;
                     if (tag.Page > -1)
                     {
                         curPage = tag.Page;
                     }
-
-                    LeftPage.Load(curDoc);
-                    RightPage.Load(curDoc);
-                    LeftPage.Page = curPage;
-                    RightPage.Page = curPage + 1;
+                    SetSongButtons();
+                    this.Invalidate();
                 }
+                this.Activate();
+                ForwardBtn.Select();
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -300,31 +445,36 @@ namespace Scorganize
             }
         }
 
-
-
         public void PopulateTreeView()
         {
             List<TreeNode> newNodes = new List<TreeNode>();
             this.CatalogTreeView.Nodes.Clear();
-            foreach (Songbook songbook in MainCatalog.Songbooks)
+            if (MainCatalog.Songbooks.Count > 0)
             {
-                TreeNode bookNode = new TreeNode();
-                bookNode.Text = songbook.Title;
-                bookNode.Tag = new TreeTag(songbook.Title, songbook.Filename, -1, TagType.Book); // Sentinel for "open book"
-                foreach (Song song in songbook.Songs)
+                foreach (Songbook songbook in MainCatalog.Songbooks)
                 {
-                    TreeNode songNode = new TreeNode();
-                    songNode.Tag = new TreeTag(song.Title, songbook.Filename, song.Page, TagType.Song);
-                    songNode.Text = song.Title;
-                    bookNode.Nodes.Add(songNode);
+                    TreeNode bookNode = new TreeNode();
+                    bookNode.Text = songbook.Title;
+                    bookNode.Tag = new TreeTag(songbook.Title, songbook.Filename, -1, TagType.Book); // Sentinel for "open book"
+                    foreach (Song song in songbook.Songs)
+                    {
+                        TreeNode songNode = new TreeNode();
+                        songNode.Tag = new TreeTag(song.Title, songbook.Filename, song.Page, TagType.Song);
+                        songNode.Text = song.Title;
+                        bookNode.Nodes.Add(songNode);
+                    }
+                    newNodes.Add(bookNode);
                 }
-                newNodes.Add(bookNode);
+                this.CatalogTreeView.Nodes.AddRange(newNodes.ToArray());
+                nodeCache.Clear();
+                foreach (TreeNode node in this.CatalogTreeView.Nodes)
+                {
+                    nodeCache.Add((TreeNode)node.Clone());
+                }
             }
-            this.CatalogTreeView.Nodes.AddRange(newNodes.ToArray());
-            nodeCache.Clear();
-            foreach (TreeNode node in this.CatalogTreeView.Nodes)
+            else
             {
-                nodeCache.Add((TreeNode)node.Clone());
+                CatalogTreeView.Nodes.Add("No songbooks loaded");
             }
             this.CatalogTreeView.Refresh();
         }
@@ -346,6 +496,75 @@ namespace Scorganize
             {
                 MainForm_TreeNodeClicked(sender, new TreeNodeMouseClickEventArgs(songNodes[random.Next(songNodes.Count)], MouseButtons.Left, 1, 0, 0));
             }
+        }
+
+        private void ForwardBtn_Click(object sender, EventArgs e)
+        {
+            PageForward();
+        }
+
+        private void BackBtn_Click(object sender, EventArgs e)
+        {
+            PageBack();
+        }
+
+        private void RemoveSongButton_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show("Are you sure want to remove this song bookmark?", "", MessageBoxButtons.YesNo);
+            if (confirmResult == DialogResult.Yes)
+            {
+                curBook.Songs.Remove(curBook.Songs.First(s => s.Page == curPage));
+                MainCatalog.Save(CatFile);
+                PopulateTreeView();
+            }
+        }
+
+        private void AddSongButton_Click(object sender, EventArgs e)
+        {
+            Song song = new Song(curPage);
+
+            EditSongDialog editSongDialog = new EditSongDialog("", "", curPage);
+            DialogResult result = editSongDialog.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                song.Title = editSongDialog.SongTitle;
+                song.Artist = editSongDialog.SongArtist;
+                song.Page = editSongDialog.SongPage;
+
+                curBook.Songs.Add(song);
+                MainCatalog.Save(CatFile);
+                PopulateTreeView();
+            }
+            editSongDialog.Dispose();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (abt == null)
+            {
+                abt = new AboutBox();
+            }
+            abt.ShowDialog(this);
+        }
+
+        private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog? form = new OpenFileDialog())
+            {
+                form.Multiselect = true;
+                form.Filter = "PDF Files|*.pdf";
+                DialogResult result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    HandleDrag(form.FileNames, this);
+                }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MainCatalog.Save(CatFile);
+            Application.Exit();
         }
     }
 }

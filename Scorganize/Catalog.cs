@@ -31,7 +31,8 @@ namespace Scorganize
         public void Save(string catFile)
         {
             string catalogString = JsonSerializer.Serialize(this);
-            using (StreamWriter sw = new StreamWriter(File.OpenWrite(catFile)))
+            Directory.CreateDirectory(Path.GetDirectoryName(catFile));
+            using (StreamWriter sw = new StreamWriter(File.Open(catFile, FileMode.Create)))
             {
                 sw.Write(catalogString);
                 sw.Flush();
