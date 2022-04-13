@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scorganize", "Scorganize\Scorganize.csproj", "{DFA77B2E-6FA0-4E7E-9B12-6C7C3E370A60}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Scorganize_Setup", "Scorganize_Setup\Scorganize_Setup.vdproj", "{439B8669-7CE0-48A1-90E4-4F6A9D40596E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		All|Any CPU = All|Any CPU
@@ -27,6 +29,12 @@ Global
 		{DFA77B2E-6FA0-4E7E-9B12-6C7C3E370A60}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DFA77B2E-6FA0-4E7E-9B12-6C7C3E370A60}.Release|x86.ActiveCfg = Release|Any CPU
 		{DFA77B2E-6FA0-4E7E-9B12-6C7C3E370A60}.Release|x86.Build.0 = Release|Any CPU
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.All|Any CPU.ActiveCfg = Debug
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.All|x86.ActiveCfg = Debug
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.Debug|Any CPU.ActiveCfg = Debug
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.Debug|x86.ActiveCfg = Debug
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.Release|Any CPU.ActiveCfg = Release
+		{439B8669-7CE0-48A1-90E4-4F6A9D40596E}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,25 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Authors>J Artis</Authors>
     <Company>Hurgle Studios</Company>
+    <SignAssembly>False</SignAssembly>
+    <StartupObject>Scorganize.Program</StartupObject>
+    <ApplicationIcon>scorg_icon_base_xX2_icon.ico</ApplicationIcon>
+    <Description>A tool for organizing PDF sheet music</Description>
+    <Copyright>(C) 2022 Hurgle Studios</Copyright>
+    <PackageIcon>scorg_icon_base.png</PackageIcon>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="scorg_icon_base_xX2_icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Desktop\scorg_icon_base.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
