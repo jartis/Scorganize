@@ -20,6 +20,8 @@ namespace Scorganize
         public EditSongDialog()
         {
             InitializeComponent();
+            SongTitle = String.Empty;
+            SongArtist = String.Empty;
             this.SongTitleTextBox.TextChanged += (sender, args) => { SongTitle = this.SongTitleTextBox.Text; };
             this.SongArtistTextBox.TextChanged += (sender, args) => { SongArtist = this.SongArtistTextBox.Text; };
             this.PageNumberInput.ValueChanged += (sender, args) => { SongPage = (int)this.PageNumberInput.Value; };

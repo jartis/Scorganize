@@ -16,23 +16,13 @@ namespace Scorganize
         private PdfiumViewer.PdfRenderer pdfRenderer;
         private Graphics leftG;
         private Graphics rightG;
-        private PdfiumViewer.PdfDocument curDoc;
+        private PdfiumViewer.PdfDocument? curDoc;
         private int curPage = 1;
-        private Songbook curBook;
-        private AboutBox abt;
+        private Songbook? curBook;
 
         private void GetConfig()
         {
-            if (Program.Conf.AppSettings.Settings.AllKeys.Contains("catfilepath"))
-            {
-                CatFile = Program.Conf.AppSettings.Settings["catfilepath"].Value;
-            }
-            else
-            {
-                CatFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "scorgcat.dat");
-                Program.Conf.AppSettings.Settings.Add("catfilepath", CatFile);
-                Program.Conf.Save();
-            }
+            CatFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "scorgcat.dat");
         }
 
         public MainForm()
@@ -40,8 +30,6 @@ namespace Scorganize
             InitializeComponent();
 
             GetConfig();
-
-
 
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler(MainForm_KeyDown);
@@ -62,6 +50,12 @@ namespace Scorganize
             this.PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
             CatalogTreeView.KeyDown += CatalogTreeView_KeyDown;
             this.MouseWheel += MainForm_MouseWheel;
+            this.FormClosing += MainForm_FormClosing;
+        }
+
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            MainCatalog.Save(CatFile);
         }
 
         private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
@@ -110,7 +104,6 @@ namespace Scorganize
 
         private void MainForm_KeyDown(object? sender, KeyEventArgs e)
         {
-            int pageChange = 0;
             switch (e.KeyCode)
             {
                 case Keys.Left:
@@ -128,7 +121,7 @@ namespace Scorganize
 
         private void PageForward()
         {
-            if (curDoc != null)
+            if (curBook != null)
             {
                 curPage = Math.Min(curPage + 1, curDoc.PageCount - 1);
                 SetSongButtons();
@@ -138,7 +131,7 @@ namespace Scorganize
 
         private void PageBack()
         {
-            if (curDoc != null)
+            if (curBook != null)
             {
                 curPage = Math.Max(curPage - 1, 1);
                 SetSongButtons();
@@ -183,17 +176,19 @@ namespace Scorganize
             ToolStripMenuItem editItem = new ToolStripMenuItem("Edit book information...");
             editItem.Click += (sender, args) =>
             {
-                EditBookDialog editBookDialog = new EditBookDialog(tag.Title, tag.Filename);
-                DialogResult result = editBookDialog.ShowDialog(this);
-                if (result == DialogResult.OK)
+                using (EditBookDialog editBookDialog = new EditBookDialog(tag.Title, tag.Filename))
                 {
-                    Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
-                    book.Title = editBookDialog.BookName;
-                    book.Filename = editBookDialog.FileName;
-                    MainCatalog.Save(CatFile);
-                    PopulateTreeView();
+                    editBookDialog.StartPosition = FormStartPosition.CenterParent;
+                    DialogResult result = editBookDialog.ShowDialog(this);
+                    if (result == DialogResult.OK)
+                    {
+                        Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
+                        book.Title = editBookDialog.BookName;
+                        book.Filename = editBookDialog.FileName;
+                        MainCatalog.Save(CatFile);
+                        PopulateTreeView();
+                    }
                 }
-                editBookDialog.Dispose();
             };
             ToolStripMenuItem shiftBackItem = new ToolStripMenuItem("Shift page numbers back one");
             shiftBackItem.Click += (sender, args) =>
@@ -247,6 +242,10 @@ namespace Scorganize
                 DialogResult confirmResult = MessageBox.Show("Are you sure you wish to replace the bookmarks in the PDF?", "", MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
+                    if (curDoc != null)
+                    {
+                        curDoc.Dispose();
+                    }
                     Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
                     if (book.ReplaceBookmarksInFile())
                     {
@@ -279,18 +278,20 @@ namespace Scorganize
                 Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
                 Song song = book.Songs.First(s => s.Title == tag.Title);
 
-                EditSongDialog editSongDialog = new EditSongDialog(song.Title, song.Artist, song.Page);
-                DialogResult result = editSongDialog.ShowDialog(this);
-                if (result == DialogResult.OK)
+                using (EditSongDialog editSongDialog = new EditSongDialog(song.Title, song.Artist, song.Page))
                 {
-                    song.Title = editSongDialog.SongTitle;
-                    song.Artist = editSongDialog.SongArtist;
-                    song.Page = editSongDialog.SongPage;
+                    editSongDialog.StartPosition = FormStartPosition.CenterParent;
+                    DialogResult result = editSongDialog.ShowDialog(this);
+                    if (result == DialogResult.OK)
+                    {
+                        song.Title = editSongDialog.SongTitle;
+                        song.Artist = editSongDialog.SongArtist;
+                        song.Page = editSongDialog.SongPage;
 
-                    MainCatalog.Save(CatFile);
-                    PopulateTreeView();
+                        MainCatalog.Save(CatFile);
+                        PopulateTreeView();
+                    }
                 }
-                editSongDialog.Dispose();
             };
             ToolStripMenuItem shiftBackItem = new ToolStripMenuItem("Shift page number back one");
             shiftBackItem.Click += (sender, args) =>
@@ -371,7 +372,7 @@ namespace Scorganize
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
 
-        public async void MainForm_DragDrop(object sender, DragEventArgs e)
+        public void MainForm_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
@@ -423,8 +424,12 @@ namespace Scorganize
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (curDoc != null)
+            if (curBook != null)
             {
+                if (curDoc == null)
+                {
+                    curDoc = PdfiumViewer.PdfDocument.Load(curBook.Filename);
+                }
                 LeftBox.Image = curDoc.Render(curPage, LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
                 RightBox.Image = curDoc.Render(curPage + 1, RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
             }
@@ -547,28 +552,29 @@ namespace Scorganize
         {
             Song song = new Song(curPage);
 
-            EditSongDialog editSongDialog = new EditSongDialog("", "", curPage);
-            DialogResult result = editSongDialog.ShowDialog(this);
-            if (result == DialogResult.OK)
+            using (EditSongDialog editSongDialog = new EditSongDialog("", "", curPage))
             {
-                song.Title = editSongDialog.SongTitle;
-                song.Artist = editSongDialog.SongArtist;
-                song.Page = editSongDialog.SongPage;
+                editSongDialog.StartPosition = FormStartPosition.CenterParent;
+                DialogResult result = editSongDialog.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    song.Title = editSongDialog.SongTitle;
+                    song.Artist = editSongDialog.SongArtist;
+                    song.Page = editSongDialog.SongPage;
 
-                curBook.Songs.Add(song);
-                MainCatalog.Save(CatFile);
-                PopulateTreeView();
+                    curBook.Songs.Add(song);
+                    MainCatalog.Save(CatFile);
+                    PopulateTreeView();
+                }
             }
-            editSongDialog.Dispose();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (abt == null)
+            using (AboutBox abt = new AboutBox())
             {
-                abt = new AboutBox();
+                abt.ShowDialog(this);
             }
-            abt.ShowDialog(this);
         }
 
         private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
@@ -587,7 +593,6 @@ namespace Scorganize
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MainCatalog.Save(CatFile);
             this.Close();
         }
     }

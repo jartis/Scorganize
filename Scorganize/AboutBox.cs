@@ -15,10 +15,10 @@ namespace Scorganize
         {
             InitializeComponent();
             this.Text = "About";
-            this.labelProductName.Text = "Scorganize";
-            this.labelVersion.Text = "Version 0.9";
+            this.labelProductName.Text = Application.ProductName;
+            this.labelVersion.Text = String.Format("Version {0}", Application.ProductVersion);
             this.labelCopyright.Text = "© 2022 J Artis";
-            this.labelCompanyName.Text = "Hurgle Studios";
+            this.labelCompanyName.Text = Application.CompanyName;
             this.textBoxDescription.Text = "Organize your unwieldly pile of completely legitimate PDF songbooks, search and sort songs by name. Special thanks to all my musician and software development friends for making this possible.";
         }
     }

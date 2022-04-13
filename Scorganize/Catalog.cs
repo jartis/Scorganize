@@ -93,7 +93,8 @@ namespace Scorganize
                 document.Outlines.Clear();
                 foreach (Song song in Songs.OrderBy(s => s.Page))
                 {
-                    document.Outlines.Add(new PdfOutline(song.Title, document.Pages[song.Page - 1]));
+                    int bookPage = Math.Min(Math.Max(song.Page, 0), document.PageCount-1);
+                    document.Outlines.Add(new PdfOutline(song.Title, document.Pages[bookPage]));
                 }
                 document.Save(Filename);
             }
