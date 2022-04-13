@@ -23,8 +23,21 @@ namespace Scorganize
             SongTitle = String.Empty;
             SongArtist = String.Empty;
             this.SongTitleTextBox.TextChanged += (sender, args) => { SongTitle = this.SongTitleTextBox.Text; };
+            this.SongTitleTextBox.KeyDown += TextBox_KeyDown;
             this.SongArtistTextBox.TextChanged += (sender, args) => { SongArtist = this.SongArtistTextBox.Text; };
+            this.SongArtistTextBox.KeyDown += TextBox_KeyDown;
             this.PageNumberInput.ValueChanged += (sender, args) => { SongPage = (int)this.PageNumberInput.Value; };
+        }
+
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SaveButton.PerformClick();
+                // these last two lines will stop the beep sound
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+            }
         }
 
         public EditSongDialog(string title, string artist, int page)

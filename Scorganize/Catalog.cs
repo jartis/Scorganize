@@ -1,6 +1,7 @@
 ﻿using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Scorganize
 {
-    public class Catalog
+    public class Catalog: IEnumerable<Songbook>
     {
         public Catalog()
         {
             Songbooks = new List<Songbook>();
-            Version = 1;
+            Version = 2;
         }
 
         public Catalog(int version, List<Songbook> songbooks)
@@ -23,10 +24,10 @@ namespace Scorganize
             Songbooks = songbooks;
         }
 
-        public List<Songbook> Songbooks { get; set; }
+        private List<Songbook> Songbooks { get; set; }
 
         public int Version { get; set; }
-
+        public int BookCount { get { return Songbooks.Count; } }
 
         public void Save(string catFile)
         {
@@ -56,28 +57,86 @@ namespace Scorganize
             {
                 jsonString = r.ReadToEnd();
             }
-            return (JsonSerializer.Deserialize<Catalog>(jsonString) ?? new Catalog());
+            Catalog c = new Catalog();
+            try
+            {
+                c = JsonSerializer.Deserialize<Catalog>(jsonString);
+            }
+            catch (Exception ex)
+            {
+                File.Copy(catFile, catFile + ".bak");
+                MessageBox.Show(String.Format("Error loading catalog file. A backup has been made at {0}.", catFile + ".bak"));
+            }
+            c.Songbooks.Sort();
+            return (c);
+        }
+
+        internal Songbook BookFromFilename(string filename)
+        {
+            return Songbooks.First(b => b.Filename == filename);
+        }
+
+        public void Remove(Songbook book)
+        {
+            Songbooks.Remove(book);
+        }
+
+        internal bool HasFile(string file)
+        {
+            return (Songbooks.Any(b => b.Filename == file));
+        }
+
+        internal void Add(Songbook book)
+        {
+            Songbooks.Add(book);
+            Songbooks.Sort();
+        }
+
+        public IEnumerator<Songbook> GetEnumerator()
+        {
+            return ((IEnumerable<Songbook>)Songbooks).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Songbooks).GetEnumerator();
         }
     }
 
-    public class Songbook
+    public class Songbook : IComparable, IEnumerable<Song>
     {
         public string Filename { get; set; }
 
         public string Title { get; set; }
 
-        public List<Song> Songs { get; set; }
+        private List<Song> Songs { get; set; }
+
+        private int pageCount { get; set; }
 
         public Songbook()
         {
             Filename = "";
             Title = "";
             Songs = new List<Song>();
+            pageCount = 0;
         }
 
         public void Add(Song song)
         {
             Songs.Add(song);
+            Songs.Sort();
+        }
+
+        public void Remove(Song song)
+        {
+            Songs.Remove(song);
+            Songs.Sort();
+        }
+
+        public void Remove(string title)
+        {
+            Songs.Remove(Songs.First(s => s.Title == title));
+            Songs.Sort();
         }
 
         public bool ReplaceBookmarksInFile()
@@ -91,9 +150,9 @@ namespace Scorganize
                 PdfDocument document = PdfReader.Open(docStream);
                 docStream.Close();
                 document.Outlines.Clear();
-                foreach (Song song in Songs.OrderBy(s => s.Page))
+                foreach (Song song in Songs.OrderBy(s => s.FirstPage))
                 {
-                    int bookPage = Math.Min(Math.Max(song.Page, 0), document.PageCount-1);
+                    int bookPage = Math.Min(Math.Max(song.FirstPage, 0), pageCount);
                     document.Outlines.Add(new PdfOutline(song.Title, document.Pages[bookPage]));
                 }
                 document.Save(Filename);
@@ -118,6 +177,7 @@ namespace Scorganize
                 {
                     PdfDocument document;
                     document = PdfReader.Open(docStream, PdfDocumentOpenMode.ReadOnly);
+                    book.pageCount = document.Pages.Count;
                     PdfOutlineCollection bookmarks = document.Outlines;
                     foreach (PdfOutline bookmark in bookmarks)
                     {
@@ -149,7 +209,7 @@ namespace Scorganize
                             book.Add(new Song(pageNum, title, artist));
                         }
                     }
-
+                    book.Songs.Sort();
                     return book;
                 }
             }
@@ -159,19 +219,76 @@ namespace Scorganize
                 return null;
             }
         }
+
+        internal bool HasMarkerAt(int curPage)
+        {
+            return Songs.Any(s => s.FirstPage == curPage);
+        }
+
+        internal void AdjustPageNumbers(int change)
+        {
+            foreach (Song s in Songs)
+            {
+                s.FirstPage = Math.Min(pageCount, Math.Max(1, s.FirstPage + change));
+            }
+            Songs.Sort();
+        }
+
+        public int CompareTo(object? obj)
+        {
+            if (obj is Songbook)
+            {
+                return Title.CompareTo(((Songbook)obj).Title);
+            }
+            return Title.CompareTo(obj);
+        }
+
+        internal void Clear()
+        {
+            Songs.Clear();
+        }
+
+        internal Song SongFromTitle(string title)
+        {
+            return Songs.First(s => s.Title == title);
+        }
+
+        internal Song SongFromPage(int page)
+        {
+            return Songs.First(s => s.FirstPage == page);
+        }
+
+        public IEnumerator<Song> GetEnumerator()
+        {
+            return ((IEnumerable<Song>)Songs).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Songs).GetEnumerator();
+        }
     }
 
-    public class Song
+    public class Song : IComparable
     {
         public string Title { get; set; }
         public string Artist { get; set; }
-        public int Page { get; set; }
+        public int FirstPage { get; set; }
 
         public Song(int page, string title = "", string artist = "")
         {
-            Page = page;
+            FirstPage = page;
             Title = title;
             Artist = artist;
+        }
+
+        public int CompareTo(object? obj)
+        {
+            if (obj is Song)
+            {
+                return FirstPage.CompareTo(((Song)obj).FirstPage);
+            }
+            return FirstPage.CompareTo(obj);
         }
     }
 

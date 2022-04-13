@@ -19,7 +19,20 @@ namespace Scorganize
         {
             InitializeComponent();
             this.BookNameTextBox.TextChanged += (sender, args) => { BookName = this.BookNameTextBox.Text; };
+            this.BookNameTextBox.KeyDown += TextBox_KeyDown;
             this.FilenameBox.TextChanged += (sender, args) => { FileName = this.FilenameBox.Text; };
+            this.FilenameBox.KeyDown += TextBox_KeyDown;
+        }
+
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                SaveButton.PerformClick();
+                // these last two lines will stop the beep sound
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+            }
         }
 
         public EditBookDialog(string title, string path)
