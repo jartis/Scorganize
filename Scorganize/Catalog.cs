@@ -30,12 +30,18 @@ namespace Scorganize
 
         public void Save(string catFile)
         {
-            string catalogString = JsonSerializer.Serialize(this);
-            Directory.CreateDirectory(Path.GetDirectoryName(catFile));
-            using (StreamWriter sw = new StreamWriter(File.Open(catFile, FileMode.Create)))
+            try
             {
-                sw.Write(catalogString);
-                sw.Flush();
+                string catalogString = JsonSerializer.Serialize(this);
+                using (StreamWriter sw = new StreamWriter(File.Open(catFile, FileMode.Create)))
+                {
+                    sw.Write(catalogString);
+                    sw.Flush();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error saving catalog");
             }
         }
 

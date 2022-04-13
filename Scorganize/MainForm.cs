@@ -29,7 +29,7 @@ namespace Scorganize
             }
             else
             {
-                CatFile = Path.Combine(Application.UserAppDataPath, "scorgcat.dat");
+                CatFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "scorgcat.dat");
                 Program.Conf.AppSettings.Settings.Add("catfilepath", CatFile);
                 Program.Conf.Save();
             }
@@ -163,6 +163,10 @@ namespace Scorganize
         private void PopContextMenu(object sender, TreeNodeMouseClickEventArgs e)
         {
             TreeTag tag = (TreeTag)e.Node.Tag;
+            if (e.Node.Tag == null)
+            {
+                return;
+            }
             ContextMenuStrip menuStrip = new ContextMenuStrip();
             if (tag.tagType == TagType.Book)
             {
@@ -446,10 +450,7 @@ namespace Scorganize
                         curDoc.Dispose();
                     }
                     curBook = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
-                    using (FileStream fs = File.OpenRead(tag.Filename))
-                    {
-                        curDoc = PdfiumViewer.PdfDocument.Load(fs);
-                    }
+                    curDoc = PdfiumViewer.PdfDocument.Load(tag.Filename);
 
                     curPage = 1;
                     if (tag.Page > -1)
@@ -587,7 +588,7 @@ namespace Scorganize
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MainCatalog.Save(CatFile);
-            Application.Exit();
+            this.Close();
         }
     }
 }
