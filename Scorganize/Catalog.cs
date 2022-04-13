@@ -74,6 +74,30 @@ namespace Scorganize
             Songs.Add(song);
         }
 
+        public bool ReplaceBookmarksInFile()
+        {
+            try
+            {
+                // HACKY; I don't like this
+                FileInfo myFile = new FileInfo(Filename);
+                myFile.IsReadOnly = false;
+                FileStream docStream = File.Open(Filename, FileMode.Open, FileAccess.ReadWrite);
+                PdfDocument document = PdfReader.Open(docStream);
+                docStream.Close();
+                document.Outlines.Clear();
+                foreach (Song song in Songs.OrderBy(s => s.Page))
+                {
+                    document.Outlines.Add(new PdfOutline(song.Title, document.Pages[song.Page - 1]));
+                }
+                document.Save(Filename);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public static Songbook FromFile(string filename)
         {
             try

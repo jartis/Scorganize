@@ -237,11 +237,30 @@ namespace Scorganize
                     PopulateTreeView();
                 }
             };
+            ToolStripMenuItem saveBookmarksItem = new ToolStripMenuItem("Save bookmarks to PDF");
+            saveBookmarksItem.Click += (sender, args) =>
+            {
+                DialogResult confirmResult = MessageBox.Show("Are you sure you wish to replace the bookmarks in the PDF?", "", MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    Songbook book = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
+                    if (book.ReplaceBookmarksInFile())
+                    {
+                        MessageBox.Show("File updated successfully", "", MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error saving the file", "", MessageBoxButtons.OK);
+                    }
+                }
+            };
 
             menuStrip.Items.Clear();
             menuStrip.Items.Add(editItem);
             menuStrip.Items.Add(shiftBackItem);
             menuStrip.Items.Add(shiftForwardItem);
+            menuStrip.Items.Add(new ToolStripSeparator());
+            menuStrip.Items.Add(saveBookmarksItem);
             menuStrip.Items.Add(new ToolStripSeparator());
             menuStrip.Items.Add(deleteSongsItem);
             menuStrip.Items.Add(deleteItem);
@@ -427,7 +446,11 @@ namespace Scorganize
                         curDoc.Dispose();
                     }
                     curBook = MainCatalog.Songbooks.First(b => b.Filename == tag.Filename);
-                    curDoc = PdfiumViewer.PdfDocument.Load(tag.Filename);
+                    using (FileStream fs = File.OpenRead(tag.Filename))
+                    {
+                        curDoc = PdfiumViewer.PdfDocument.Load(fs);
+                    }
+
                     curPage = 1;
                     if (tag.Page > -1)
                     {

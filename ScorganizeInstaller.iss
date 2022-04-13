@@ -41,6 +41,7 @@ Source: "C:\Users\Owner\source\repos\Scorganize\Scorganize\bin\Release\net6.0-wi
 Source: "C:\Users\Owner\source\repos\Scorganize\Scorganize\bin\Release\net6.0-windows\Scorganize.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Owner\source\repos\Scorganize\Scorganize\bin\Release\net6.0-windows\SixLabors.Fonts.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Owner\source\repos\Scorganize\Scorganize\bin\Release\net6.0-windows\SixLabors.ImageSharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Owner\source\repos\Scorganize\Scorganize\bin\Release\net6.0-windows\x64\pdfium.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
