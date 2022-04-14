@@ -17,7 +17,19 @@ namespace Scorganize
         private Graphics leftG;
         private Graphics rightG;
         private PdfiumViewer.PdfDocument? curDoc;
-        private int curPage = 1;
+        private int _curPage = 1;
+        private int curPage
+        {
+            get
+            {
+                return _curPage;
+            }
+            set
+            {
+                PageNumberBox.Text = value.ToString();
+                _curPage = value;
+            }
+        }
         private Songbook? curBook;
 
         private void GetConfig()
@@ -51,6 +63,18 @@ namespace Scorganize
             CatalogTreeView.KeyDown += CatalogTreeView_KeyDown;
             this.MouseWheel += MainForm_MouseWheel;
             this.FormClosing += MainForm_FormClosing;
+            PageNumberBox.TextChanged += PageNumberBox_TextChanged;
+        }
+
+        private void PageNumberBox_TextChanged(object? sender, EventArgs e)
+        {
+            if (curDoc == null) return;
+            if (!(int.TryParse(PageNumberBox.Text, out int newPage)))
+            {
+                PageNumberBox.Text = curPage.ToString();
+            }
+            curPage = Math.Max(1, Math.Min(newPage, curDoc.PageCount - 1));
+            Invalidate();
         }
 
         private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
@@ -60,14 +84,7 @@ namespace Scorganize
 
         private void MainForm_MouseWheel(object? sender, MouseEventArgs e)
         {
-            if (e.Delta < 0)
-            {
-                PageForward();
-            }
-            else if (e.Delta > 0)
-            {
-                PageBack();
-            }
+            changePage(-Math.Sign(e.Delta));
         }
 
         private void CatalogTreeView_KeyDown(object? sender, KeyEventArgs e)
@@ -109,33 +126,23 @@ namespace Scorganize
                 case Keys.Left:
                 case Keys.Up:
                 case Keys.PageUp:
-                    PageBack();
+                    changePage(-1);
                     break;
                 case Keys.Right:
                 case Keys.Down:
                 case Keys.PageDown:
-                    PageForward();
+                    changePage(1);
                     break;
             }
         }
 
-        private void PageForward()
+        private void changePage(int change)
         {
             if (curBook != null)
             {
-                curPage = Math.Min(curPage + 1, curDoc.PageCount - 1);
-                SetSongButtons();
-                Invalidate();
-            }
-        }
-
-        private void PageBack()
-        {
-            if (curBook != null)
-            {
-                curPage = Math.Max(curPage - 1, 1);
-                SetSongButtons();
-                Invalidate();
+                curPage += change;
+                curPage = Math.Max(Math.Min(curPage, curDoc.PageCount - 1), 1);
+                PageNumberBox.Text = curPage.ToString();
             }
         }
 
@@ -415,7 +422,7 @@ namespace Scorganize
                 {
                     curDoc = PdfiumViewer.PdfDocument.Load(curBook.Filename);
                 }
-                LeftBox.Image = curDoc.Render(Math.Max(curPage-1, 0), LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
+                LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
                 RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
             }
             base.OnPaint(e);
@@ -514,12 +521,12 @@ namespace Scorganize
 
         private void ForwardBtn_Click(object sender, EventArgs e)
         {
-            PageForward();
+            changePage(1);
         }
 
         private void BackBtn_Click(object sender, EventArgs e)
         {
-            PageBack();
+            changePage(-1);
         }
 
         private void RemoveSongButton_Click(object sender, EventArgs e)

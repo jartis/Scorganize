@@ -44,6 +44,7 @@ namespace Scorganize
             this.RandomSongButton = new System.Windows.Forms.ToolStripButton();
             this.AddSongButton = new System.Windows.Forms.ToolStripButton();
             this.RemoveSongButton = new System.Windows.Forms.ToolStripButton();
+            this.PageNumberBox = new System.Windows.Forms.ToolStripTextBox();
             this.ForwardBtn = new System.Windows.Forms.ToolStripButton();
             this.BackBtn = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -152,6 +153,7 @@ namespace Scorganize
             this.AddSongButton,
             this.RemoveSongButton,
             this.ForwardBtn,
+            this.PageNumberBox,
             this.BackBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -192,6 +194,14 @@ namespace Scorganize
             this.RemoveSongButton.Text = "🚫 Remove Song Bookmark";
             this.RemoveSongButton.Visible = false;
             this.RemoveSongButton.Click += new System.EventHandler(this.RemoveSongButton_Click);
+            // 
+            // PageNumberBox
+            // 
+            this.PageNumberBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.PageNumberBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageNumberBox.Name = "PageNumberBox";
+            this.PageNumberBox.Size = new System.Drawing.Size(36, 25);
+            this.PageNumberBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // ForwardBtn
             // 
@@ -304,21 +314,21 @@ namespace Scorganize
             // newSetlistToolStripMenuItem
             // 
             this.newSetlistToolStripMenuItem.Name = "newSetlistToolStripMenuItem";
-            this.newSetlistToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newSetlistToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.newSetlistToolStripMenuItem.Text = "&New Setlist";
             this.newSetlistToolStripMenuItem.Click += new System.EventHandler(this.newSetlistToolStripMenuItem_Click);
             // 
             // openSetlistToolStripMenuItem
             // 
             this.openSetlistToolStripMenuItem.Name = "openSetlistToolStripMenuItem";
-            this.openSetlistToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openSetlistToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.openSetlistToolStripMenuItem.Text = "&Edit Setlist";
             this.openSetlistToolStripMenuItem.Click += new System.EventHandler(this.openSetlistToolStripMenuItem_Click);
             // 
             // playSetlistToolStripMenuItem
             // 
             this.playSetlistToolStripMenuItem.Name = "playSetlistToolStripMenuItem";
-            this.playSetlistToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playSetlistToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.playSetlistToolStripMenuItem.Text = "&Play Setlist";
             this.playSetlistToolStripMenuItem.Click += new System.EventHandler(this.playSetlistToolStripMenuItem_Click);
             // 
@@ -383,5 +393,6 @@ namespace Scorganize
         private ToolStripMenuItem newSetlistToolStripMenuItem;
         private ToolStripMenuItem openSetlistToolStripMenuItem;
         private ToolStripMenuItem playSetlistToolStripMenuItem;
+        private ToolStripTextBox PageNumberBox;
     }
 }
