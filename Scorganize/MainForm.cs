@@ -268,7 +268,7 @@ namespace Scorganize
                 Songbook book = MainCatalog.BookFromFilename(tag.Filename);
                 Song song = book.SongFromTitle(tag.Title);
 
-                using (EditSongDialog editSongDialog = new EditSongDialog(song.Title, song.Artist, song.FirstPage))
+                using (EditSongDialog editSongDialog = new EditSongDialog(song.Title, song.Artist, song.FirstPage, song.NumPages))
                 {
                     editSongDialog.StartPosition = FormStartPosition.CenterParent;
                     DialogResult result = editSongDialog.ShowDialog(this);
@@ -415,8 +415,8 @@ namespace Scorganize
                 {
                     curDoc = PdfiumViewer.PdfDocument.Load(curBook.Filename);
                 }
-                LeftBox.Image = curDoc.Render(curPage, LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
-                RightBox.Image = curDoc.Render(curPage + 1, RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
+                LeftBox.Image = curDoc.Render(Math.Max(curPage-1, 0), LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
+                RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
             }
             base.OnPaint(e);
         }
@@ -465,15 +465,15 @@ namespace Scorganize
             this.CatalogTreeView.Nodes.Clear();
             if (MainCatalog.BookCount > 0)
             {
-                foreach (Songbook songbook in MainCatalog)
+                foreach (Songbook songbook in MainCatalog.Songbooks)
                 {
                     TreeNode bookNode = new TreeNode();
                     bookNode.Text = songbook.Title;
-                    bookNode.Tag = new TreeTag(songbook.Title, songbook.Filename, -1, TagType.Book); // Sentinel for "open book"
-                    foreach (Song song in songbook)
+                    bookNode.Tag = new TreeTag(songbook.Title, songbook.Filename, -1, -1, TagType.Book); // Sentinel for "open book"
+                    foreach (Song song in songbook.Songs)
                     {
                         TreeNode songNode = new TreeNode();
-                        songNode.Tag = new TreeTag(song.Title, songbook.Filename, song.FirstPage, TagType.Song);
+                        songNode.Tag = new TreeTag(song.Title, songbook.Filename, song.FirstPage, song.NumPages, TagType.Song);
                         songNode.Text = song.Title;
                         bookNode.Nodes.Add(songNode);
                     }
@@ -535,9 +535,9 @@ namespace Scorganize
 
         private void AddSongButton_Click(object sender, EventArgs e)
         {
-            Song song = new Song(curPage);
+            Song song = new Song(curPage, 1);
 
-            using (EditSongDialog editSongDialog = new EditSongDialog("", "", curPage))
+            using (EditSongDialog editSongDialog = new EditSongDialog("", "", curPage, 1))
             {
                 editSongDialog.StartPosition = FormStartPosition.CenterParent;
                 DialogResult result = editSongDialog.ShowDialog(this);
@@ -546,6 +546,7 @@ namespace Scorganize
                     song.Title = editSongDialog.SongTitle;
                     song.Artist = editSongDialog.SongArtist;
                     song.FirstPage = editSongDialog.SongPage;
+                    song.NumPages = editSongDialog.NumPages;
 
                     curBook.Add(song);
                     MainCatalog.Save(CatFile);
@@ -583,15 +584,31 @@ namespace Scorganize
 
         private void newSetlistToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (SetlistEditForm setlistEditForm = new SetlistEditForm())
+            using (SetlistEditForm setlistEditForm = new SetlistEditForm(MainCatalog))
             {
+                setlistEditForm.StartPosition = FormStartPosition.CenterParent;
                 setlistEditForm.ShowDialog(this);
             }
         }
 
         private void openSetlistToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            using (SetlistEditForm setlistEditForm = new SetlistEditForm(MainCatalog))
+            {
+                setlistEditForm.StartPosition = FormStartPosition.CenterParent;
+                setlistEditForm.LoadSetlist();
+                setlistEditForm.ShowDialog(this);
+            }
+        }
+
+        private void playSetlistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (PlaySetlistForm psf = new PlaySetlistForm())
+            {
+                psf.StartPosition = FormStartPosition.CenterParent;
+                psf.LoadSetlistAndBuildDoc();
+                psf.ShowDialog(this);
+            }
         }
     }
 }

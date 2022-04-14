@@ -60,6 +60,43 @@
                 }
             }
         }
+        "Deploy"
+        {
+        "DisplayName" = "8:Deploy"
+        "IsDebugOnly" = "11:FALSE"
+        "IsReleaseOnly" = "11:FALSE"
+        "OutputFilename" = "8:Deploy\\Scorganize_Setup.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.6.0.x86"
+                    {
+                    "Name" = "8:.NET Desktop Runtime 6.0.3 (x86)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.6.0.x86"
+                    }
+                }
+            }
+        }
         "Release"
         {
         "DisplayName" = "8:Release"
@@ -215,7 +252,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Scorganize"
         "ProductCode" = "8:{C088C131-7747-4533-8245-7C8DD9E6AFC8}"
-        "PackageCode" = "8:{6317F584-427A-4CA1-BAA8-A32FF3DD55CD}"
+        "PackageCode" = "8:{579428AA-2508-49DB-85E0-5B7879F57AB6}"
         "UpgradeCode" = "8:{86F2E4D4-8EAA-42A6-B3E5-D2E97D3A8C30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

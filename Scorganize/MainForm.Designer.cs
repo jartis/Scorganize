@@ -58,6 +58,7 @@ namespace Scorganize
             this.setlistsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.playSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -267,19 +268,19 @@ namespace Scorganize
             // importPDFToolStripMenuItem
             // 
             this.importPDFToolStripMenuItem.Name = "importPDFToolStripMenuItem";
-            this.importPDFToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importPDFToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.importPDFToolStripMenuItem.Text = "Imp&ort PDF...";
             this.importPDFToolStripMenuItem.Click += new System.EventHandler(this.importPDFToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(140, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -294,7 +295,8 @@ namespace Scorganize
             // 
             this.setlistsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newSetlistToolStripMenuItem,
-            this.openSetlistToolStripMenuItem});
+            this.openSetlistToolStripMenuItem,
+            this.playSetlistToolStripMenuItem});
             this.setlistsToolStripMenuItem.Name = "setlistsToolStripMenuItem";
             this.setlistsToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
             this.setlistsToolStripMenuItem.Text = "&Setlists";
@@ -310,8 +312,15 @@ namespace Scorganize
             // 
             this.openSetlistToolStripMenuItem.Name = "openSetlistToolStripMenuItem";
             this.openSetlistToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openSetlistToolStripMenuItem.Text = "&Open Setlist...";
+            this.openSetlistToolStripMenuItem.Text = "&Edit Setlist";
             this.openSetlistToolStripMenuItem.Click += new System.EventHandler(this.openSetlistToolStripMenuItem_Click);
+            // 
+            // playSetlistToolStripMenuItem
+            // 
+            this.playSetlistToolStripMenuItem.Name = "playSetlistToolStripMenuItem";
+            this.playSetlistToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playSetlistToolStripMenuItem.Text = "&Play Setlist";
+            this.playSetlistToolStripMenuItem.Click += new System.EventHandler(this.playSetlistToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -322,6 +331,7 @@ namespace Scorganize
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "Scorganize";
@@ -372,5 +382,6 @@ namespace Scorganize
         private ToolStripMenuItem setlistsToolStripMenuItem;
         private ToolStripMenuItem newSetlistToolStripMenuItem;
         private ToolStripMenuItem openSetlistToolStripMenuItem;
+        private ToolStripMenuItem playSetlistToolStripMenuItem;
     }
 }

@@ -36,7 +36,10 @@
             this.CancelButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.PageNumberInput = new System.Windows.Forms.NumericUpDown();
+            this.NumPagesControl = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PageNumberInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumPagesControl)).BeginInit();
             this.SuspendLayout();
             // 
             // SongTitleTextBox
@@ -113,11 +116,35 @@
             this.PageNumberInput.TabIndex = 8;
             this.PageNumberInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // NumPagesControl
+            // 
+            this.NumPagesControl.Location = new System.Drawing.Point(242, 72);
+            this.NumPagesControl.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.NumPagesControl.Name = "NumPagesControl";
+            this.NumPagesControl.Size = new System.Drawing.Size(47, 23);
+            this.NumPagesControl.TabIndex = 10;
+            this.NumPagesControl.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(162, 74);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(74, 15);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "No. of Pages";
+            // 
             // EditSongDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(525, 106);
+            this.Controls.Add(this.NumPagesControl);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.PageNumberInput);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.CancelButton);
@@ -133,6 +160,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Edit Song Information";
             ((System.ComponentModel.ISupportInitialize)(this.PageNumberInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumPagesControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,5 +176,7 @@
         private Button CancelButton;
         private Label label3;
         private NumericUpDown PageNumberInput;
+        private NumericUpDown NumPagesControl;
+        private Label label4;
     }
 }

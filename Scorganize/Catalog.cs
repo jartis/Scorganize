@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Scorganize
 {
-    public class Catalog: IEnumerable<Songbook>
+    public class Catalog
     {
         public Catalog()
         {
@@ -24,9 +25,11 @@ namespace Scorganize
             Songbooks = songbooks;
         }
 
-        private List<Songbook> Songbooks { get; set; }
+        public List<Songbook> Songbooks { get; set; }
 
         public int Version { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public int BookCount { get { return Songbooks.Count; } }
 
         public void Save(string catFile)
@@ -91,27 +94,17 @@ namespace Scorganize
             Songbooks.Add(book);
             Songbooks.Sort();
         }
-
-        public IEnumerator<Songbook> GetEnumerator()
-        {
-            return ((IEnumerable<Songbook>)Songbooks).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)Songbooks).GetEnumerator();
-        }
     }
 
-    public class Songbook : IComparable, IEnumerable<Song>
+    public class Songbook : IComparable
     {
         public string Filename { get; set; }
 
         public string Title { get; set; }
 
-        private List<Song> Songs { get; set; }
+        public List<Song> Songs { get; set; }
 
-        private int pageCount { get; set; }
+        public int pageCount { get; set; }
 
         public Songbook()
         {
@@ -119,6 +112,14 @@ namespace Scorganize
             Title = "";
             Songs = new List<Song>();
             pageCount = 0;
+        }
+
+        public Songbook(string filename, string title, List<Song> songs, int pagecount)
+        {
+            Filename = filename;
+            Title = title;
+            Songs = songs;
+            pageCount = pagecount;
         }
 
         public void Add(Song song)
@@ -179,6 +180,7 @@ namespace Scorganize
                     document = PdfReader.Open(docStream, PdfDocumentOpenMode.ReadOnly);
                     book.pageCount = document.Pages.Count;
                     PdfOutlineCollection bookmarks = document.Outlines;
+                    Song prevSong = null;
                     foreach (PdfOutline bookmark in bookmarks)
                     {
                         int pageNum = -1;
@@ -206,10 +208,11 @@ namespace Scorganize
                             //    title = titleParts[0];
                             //    artist = titleParts[1];
                             //}
-                            book.Add(new Song(pageNum, title, artist));
+                            book.Add(new Song(pageNum, 1, title, artist));
                         }
                     }
                     book.Songs.Sort();
+                    book.FudgePageNumbers();
                     return book;
                 }
             }
@@ -217,6 +220,14 @@ namespace Scorganize
             {
                 // Log the error
                 return null;
+            }
+        }
+
+        private void FudgePageNumbers()
+        {
+            for (int i = 0; i < Songs.Count - 1; i++)
+            {
+                Songs[i].NumPages = Math.Max(Songs[i + 1].FirstPage - Songs[i].FirstPage, 1);
             }
         }
 
@@ -257,16 +268,6 @@ namespace Scorganize
         {
             return Songs.First(s => s.FirstPage == page);
         }
-
-        public IEnumerator<Song> GetEnumerator()
-        {
-            return ((IEnumerable<Song>)Songs).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)Songs).GetEnumerator();
-        }
     }
 
     public class Song : IComparable
@@ -275,11 +276,14 @@ namespace Scorganize
         public string Artist { get; set; }
         public int FirstPage { get; set; }
 
-        public Song(int page, string title = "", string artist = "")
+        public int NumPages { get; set; }
+
+        public Song(int firstpage, int numpages, string title = "", string artist = "")
         {
-            FirstPage = page;
+            FirstPage = firstpage;
             Title = title;
             Artist = artist;
+            NumPages = numpages;
         }
 
         public int CompareTo(object? obj)
@@ -297,20 +301,23 @@ namespace Scorganize
         public string Title { get; set; }
         public string Filename { get; set; }
         public int Page { get; set; }
+        public int NumPages { get; set; }
 
         public TagType tagType { get; set; }
 
-        public TreeTag(string title, string filename, int page, TagType tt)
+        public TreeTag(string title, string filename, int page, int numpages, TagType tt)
         {
             Title = title;
             Filename = filename;
             Page = page;
+            NumPages = numpages;
             tagType = tt;
         }
     }
 
     public enum TagType
     {
+        None,
         Song,
         Book,
     }

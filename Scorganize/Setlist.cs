@@ -8,11 +8,21 @@ namespace Scorganize
 {
     public class Setlist
     {
-        public List<SetlistEntry> entries;
+        public List<SetlistEntry> Entries { get; set; }
 
         public Setlist()
         {
-            entries = new List<SetlistEntry>();
+            Entries = new List<SetlistEntry>();
+        }
+
+        public Setlist(List<SetlistEntry> entries)
+        {
+            this.Entries = entries;
+        }
+
+        public void Add(SetlistEntry entry)
+        {
+            Entries.Add(entry);
         }
 
         public void Add(Song song, Songbook book)
@@ -37,12 +47,12 @@ namespace Scorganize
             NumPages = 0;
         }
 
-        public SetlistEntry(string title, string filename, int start, int num)
+        public SetlistEntry(string title, string filename, int startpage, int numpages)
         {
             Title = title;
             Filename = filename;
-            StartPage = start;
-            NumPages = num;
+            StartPage = startpage;
+            NumPages = numpages;
         }
     }
 }
