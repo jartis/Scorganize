@@ -34,7 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.NopeButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BookNameTextBox
@@ -92,20 +92,20 @@
             // 
             // CancelButton
             // 
-            this.CancelButton.Location = new System.Drawing.Point(373, 75);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 6;
-            this.CancelButton.Text = "❌ Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.NopeButton.Location = new System.Drawing.Point(373, 75);
+            this.NopeButton.Name = "CancelButton";
+            this.NopeButton.Size = new System.Drawing.Size(75, 23);
+            this.NopeButton.TabIndex = 6;
+            this.NopeButton.Text = "❌ Cancel";
+            this.NopeButton.UseVisualStyleBackColor = true;
+            this.NopeButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // EditBookDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(541, 106);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.NopeButton);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -131,6 +131,6 @@
         private Label label1;
         private Label label2;
         private Button SaveButton;
-        private Button CancelButton;
+        private Button NopeButton;
     }
 }

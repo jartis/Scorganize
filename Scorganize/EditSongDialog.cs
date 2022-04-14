@@ -17,15 +17,32 @@ namespace Scorganize
 
         public int SongPage { get; set; }
 
+        public int NumPages { get; set; }
+
         public EditSongDialog()
         {
             InitializeComponent();
+            SongTitle = String.Empty;
+            SongArtist = String.Empty;
+            this.SongArtistTextBox.KeyDown += TextBox_KeyDown;
+            this.SongTitleTextBox.KeyDown += TextBox_KeyDown;
             this.SongTitleTextBox.TextChanged += (sender, args) => { SongTitle = this.SongTitleTextBox.Text; };
             this.SongArtistTextBox.TextChanged += (sender, args) => { SongArtist = this.SongArtistTextBox.Text; };
             this.PageNumberInput.ValueChanged += (sender, args) => { SongPage = (int)this.PageNumberInput.Value; };
+            this.NumPagesControl.ValueChanged += (sender, args) => { NumPages = (int)this.NumPagesControl.Value; };
         }
 
-        public EditSongDialog(string title, string artist, int page)
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                SaveButton.PerformClick();
+            }
+        }
+
+        public EditSongDialog(string title, string artist, int page, int numpages)
         {
             InitializeComponent();
             this.SongTitleTextBox.Text = title;
@@ -34,9 +51,12 @@ namespace Scorganize
             SongArtist = artist;
             this.PageNumberInput.Value = page;
             SongPage = page;
+            this.NumPagesControl.Value = numpages;
+            NumPages = numpages;
             this.SongTitleTextBox.TextChanged += (sender, args) => { SongTitle = this.SongTitleTextBox.Text; };
             this.SongArtistTextBox.TextChanged += (sender, args) => { SongArtist = this.SongArtistTextBox.Text; };
             this.PageNumberInput.ValueChanged += (sender, args) => { SongPage = (int)this.PageNumberInput.Value; };
+            this.PageNumberInput.ValueChanged += (sender, args) => { NumPages = (int)this.NumPagesControl.Value; };
         }
 
         private void SaveButton_Click(object sender, EventArgs e)

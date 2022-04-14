@@ -18,8 +18,20 @@ namespace Scorganize
         public EditBookDialog()
         {
             InitializeComponent();
+            this.BookNameTextBox.KeyDown += TextBox_KeyDown;
+            this.FilenameBox.KeyDown += TextBox_KeyDown;
             this.BookNameTextBox.TextChanged += (sender, args) => { BookName = this.BookNameTextBox.Text; };
             this.FilenameBox.TextChanged += (sender, args) => { FileName = this.FilenameBox.Text; };
+        }
+
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                SaveButton.PerformClick();
+            }
         }
 
         public EditBookDialog(string title, string path)
