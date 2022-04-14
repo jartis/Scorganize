@@ -60,6 +60,9 @@ namespace Scorganize
             this.newSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playSetlistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.singlePageViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sideByToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -92,25 +95,27 @@ namespace Scorganize
             this.splitContainer1.Panel2.Controls.Add(this.toolStrip1);
             this.splitContainer1.Panel2.Controls.Add(this.statusStrip1);
             this.splitContainer1.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.splitContainer1.Size = new System.Drawing.Size(800, 426);
-            this.splitContainer1.SplitterDistance = 266;
+            this.splitContainer1.Size = new System.Drawing.Size(994, 505);
+            this.splitContainer1.SplitterDistance = 330;
             this.splitContainer1.TabIndex = 0;
             // 
             // SearchBox
             // 
             this.SearchBox.ButtonTextClear = true;
             this.SearchBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SearchBox.Location = new System.Drawing.Point(0, 399);
+            this.SearchBox.Location = new System.Drawing.Point(0, 478);
             this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(262, 23);
+            this.SearchBox.Size = new System.Drawing.Size(326, 23);
             this.SearchBox.TabIndex = 1;
             // 
             // CatalogTreeView
             // 
             this.CatalogTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CatalogTreeView.HideSelection = false;
+            this.CatalogTreeView.HotTracking = true;
             this.CatalogTreeView.Location = new System.Drawing.Point(0, 0);
             this.CatalogTreeView.Name = "CatalogTreeView";
-            this.CatalogTreeView.Size = new System.Drawing.Size(262, 422);
+            this.CatalogTreeView.Size = new System.Drawing.Size(326, 501);
             this.CatalogTreeView.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -125,7 +130,7 @@ namespace Scorganize
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(526, 375);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(656, 454);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // LeftBox
@@ -133,16 +138,16 @@ namespace Scorganize
             this.LeftBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LeftBox.Location = new System.Drawing.Point(3, 3);
             this.LeftBox.Name = "LeftBox";
-            this.LeftBox.Size = new System.Drawing.Size(257, 369);
+            this.LeftBox.Size = new System.Drawing.Size(322, 448);
             this.LeftBox.TabIndex = 0;
             this.LeftBox.TabStop = false;
             // 
             // RightBox
             // 
             this.RightBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RightBox.Location = new System.Drawing.Point(266, 3);
+            this.RightBox.Location = new System.Drawing.Point(331, 3);
             this.RightBox.Name = "RightBox";
-            this.RightBox.Size = new System.Drawing.Size(257, 369);
+            this.RightBox.Size = new System.Drawing.Size(322, 448);
             this.RightBox.TabIndex = 1;
             this.RightBox.TabStop = false;
             // 
@@ -157,7 +162,7 @@ namespace Scorganize
             this.BackBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(526, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(656, 25);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
@@ -233,9 +238,9 @@ namespace Scorganize
             this.ProcessProgressBar,
             this.StatusLabel});
             this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.statusStrip1.Location = new System.Drawing.Point(0, 400);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 479);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(526, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(656, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -258,10 +263,11 @@ namespace Scorganize
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.aboutToolStripMenuItem,
-            this.setlistsToolStripMenuItem});
+            this.setlistsToolStripMenuItem,
+            this.optionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(994, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -332,12 +338,30 @@ namespace Scorganize
             this.playSetlistToolStripMenuItem.Text = "&Play Setlist";
             this.playSetlistToolStripMenuItem.Click += new System.EventHandler(this.playSetlistToolStripMenuItem_Click);
             // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "&Options";
+            // 
+            // singlePageViewToolStripMenuItem
+            // 
+            this.singlePageViewToolStripMenuItem.Name = "singlePageViewToolStripMenuItem";
+            this.singlePageViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.singlePageViewToolStripMenuItem.Text = "Single Page View";
+            // 
+            // sideByToolStripMenuItem
+            // 
+            this.sideByToolStripMenuItem.Name = "sideByToolStripMenuItem";
+            this.sideByToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sideByToolStripMenuItem.Text = "Side By ";
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(994, 529);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -394,5 +418,8 @@ namespace Scorganize
         private ToolStripMenuItem openSetlistToolStripMenuItem;
         private ToolStripMenuItem playSetlistToolStripMenuItem;
         private ToolStripTextBox PageNumberBox;
+        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ToolStripMenuItem singlePageViewToolStripMenuItem;
+        private ToolStripMenuItem sideByToolStripMenuItem;
     }
 }

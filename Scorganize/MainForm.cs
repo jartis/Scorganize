@@ -517,11 +517,19 @@ namespace Scorganize
             List<TreeNode> songNodes = new List<TreeNode>();
             foreach (TreeNode node in nodeCache)
             {
-                if (node.Nodes.Count > 0)
+                if (node.Tag == null)
                 {
-                    foreach (TreeNode t in node.Nodes)
+                    continue;
+                }
+                TreeTag tt = (TreeTag)node.Tag;
+                if (tt.tagType == TagType.Book)
+                {
+                    if (node.Nodes.Count > 0)
                     {
-                        songNodes.Add(t);
+                        foreach (TreeNode t in node.Nodes)
+                        {
+                            songNodes.Add(t);
+                        }
                     }
                 }
             }
