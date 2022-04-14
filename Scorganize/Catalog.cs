@@ -191,7 +191,17 @@ namespace Scorganize
                                 if (int.TryParse(bookmark.DestinationPage.Elements["/StructParents"].ToString(), out pageNum))
                                 {
                                     pageNum += 1; // Zero-based
-                                };
+                                }
+                            } else {
+                                for (int i = 0; i < document.PageCount; i++)
+                                {
+                                    if (document.Pages[i].Equals(bookmark.DestinationPage))
+                                    {
+                                        // Hey it's a success!
+                                        pageNum = i+1;
+                                        break;
+                                    }
+                                }
                             }
                         }
                         if (pageNum > -1)
