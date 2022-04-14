@@ -148,7 +148,12 @@ namespace Scorganize
 
         private void SetSongButtons()
         {
-            if (curBook.HasMarkerAt(curPage))
+            if (curBook == null)
+            {
+                RemoveSongButton.Visible = false;
+                AddSongButton.Visible = false;
+            }
+            else if (curBook.HasMarkerAt(curPage))
             {
                 RemoveSongButton.Visible = true;
                 AddSongButton.Visible = false;
@@ -228,6 +233,13 @@ namespace Scorganize
                 DialogResult confirmResult = MessageBox.Show("Are you sure want to remove this songbook?", "", MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
+                    if (MainCatalog.BookFromFilename(tag.Filename) == curBook)
+                    {
+                        curDoc.Dispose();
+                        curDoc = null;
+                        SetSongButtons();
+                        Invalidate();
+                    }
                     MainCatalog.Remove(MainCatalog.BookFromFilename(tag.Filename));
                     MainCatalog.Save(CatFile);
                     PopulateTreeView();
