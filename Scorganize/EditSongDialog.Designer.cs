@@ -33,7 +33,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
-            this.CancelButton = new System.Windows.Forms.Button();
+            this.ExitButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.PageNumberInput = new System.Windows.Forms.NumericUpDown();
             this.NumPagesControl = new System.Windows.Forms.NumericUpDown();
@@ -86,13 +86,13 @@
             // 
             // CancelButton
             // 
-            this.CancelButton.Location = new System.Drawing.Point(356, 73);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 6;
-            this.CancelButton.Text = "❌ Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.ExitButton.Location = new System.Drawing.Point(356, 73);
+            this.ExitButton.Name = "CancelButton";
+            this.ExitButton.Size = new System.Drawing.Size(75, 23);
+            this.ExitButton.TabIndex = 6;
+            this.ExitButton.Text = "❌ Cancel";
+            this.ExitButton.UseVisualStyleBackColor = true;
+            this.ExitButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // label3
             // 
@@ -147,7 +147,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.PageNumberInput);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -173,7 +173,7 @@
         private Label label1;
         private Label label2;
         private Button SaveButton;
-        private Button CancelButton;
+        private Button ExitButton;
         private Label label3;
         private NumericUpDown PageNumberInput;
         private NumericUpDown NumPagesControl;

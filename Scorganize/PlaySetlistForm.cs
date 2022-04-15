@@ -32,6 +32,7 @@ namespace Scorganize
             this.FormClosing += PlaySetlistForm_FormClosing;
             this.SetlistListbox.DisplayMember = "Title";
             setlist = new Setlist();
+            tempfile = String.Empty;
         }
 
         // TODO: Add internal bookmarks to this document, in case of exporting
@@ -47,7 +48,7 @@ namespace Scorganize
                     using (StreamReader r = new StreamReader(form.FileName))
                     {
                         string jsonString = r.ReadToEnd();
-                        Setlist l = JsonSerializer.Deserialize<Setlist>(jsonString);
+                        Setlist l = JsonSerializer.Deserialize<Setlist>(jsonString) ?? new Setlist();
                         foreach (SetlistEntry entry in l.Entries)
                         {
                             SetlistListbox.Items.Add(entry);
@@ -77,8 +78,14 @@ namespace Scorganize
 
         private void PlaySetlistForm_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            curDoc.Dispose();
-            File.Delete(tempfile);
+            if (curDoc != null)
+            {
+                curDoc.Dispose();
+            }
+            if (File.Exists(tempfile))
+            {
+                File.Delete(tempfile);
+            }
         }
 
         private void PlaySetlistForm_MouseWheel(object? sender, MouseEventArgs e)
@@ -127,12 +134,14 @@ namespace Scorganize
 
         private void PageForward()
         {
+            if (curDoc is null) { return; }
             curPage = Math.Min(curPage + 1, curDoc.PageCount - 1);
             Invalidate();
         }
 
         private void PageBack()
         {
+            if (curDoc is null) { return; }
             curPage = Math.Max(curPage - 1, 1);
             Invalidate();
         }

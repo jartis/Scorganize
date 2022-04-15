@@ -60,15 +60,16 @@ namespace Scorganize
             {
                 jsonString = r.ReadToEnd();
             }
-            Catalog c = new Catalog();
+            Catalog c;
             try
             {
-                c = JsonSerializer.Deserialize<Catalog>(jsonString);
+                c = JsonSerializer.Deserialize<Catalog>(jsonString) ?? new Catalog();
             }
-            catch (Exception ex)
+            catch
             {
                 File.Copy(catFile, catFile + ".bak");
                 MessageBox.Show(String.Format("Error loading catalog file. A backup has been made at {0}.", catFile + ".bak"));
+                return new Catalog();
             }
             c.Songbooks.Sort();
             return (c);
@@ -158,14 +159,14 @@ namespace Scorganize
                 }
                 document.Save(Filename);
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
             return true;
         }
 
-        public static Songbook FromFile(string filename)
+        public static Songbook? FromFile(string filename)
         {
             try
             {
@@ -180,7 +181,6 @@ namespace Scorganize
                     document = PdfReader.Open(docStream, PdfDocumentOpenMode.ReadOnly);
                     book.pageCount = document.Pages.Count;
                     PdfOutlineCollection bookmarks = document.Outlines;
-                    Song prevSong = null;
                     foreach (PdfOutline bookmark in bookmarks)
                     {
                         int pageNum = -1;
@@ -226,7 +226,7 @@ namespace Scorganize
                     return book;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Log the error
                 return null;

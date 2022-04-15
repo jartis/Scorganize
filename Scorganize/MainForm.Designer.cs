@@ -44,8 +44,8 @@ namespace Scorganize
             this.RandomSongButton = new System.Windows.Forms.ToolStripButton();
             this.AddSongButton = new System.Windows.Forms.ToolStripButton();
             this.RemoveSongButton = new System.Windows.Forms.ToolStripButton();
-            this.PageNumberBox = new System.Windows.Forms.ToolStripTextBox();
             this.ForwardBtn = new System.Windows.Forms.ToolStripButton();
+            this.PageNumberBox = new System.Windows.Forms.ToolStripTextBox();
             this.BackBtn = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.ProcessProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -63,6 +63,7 @@ namespace Scorganize
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.singlePageViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sideByToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteEntireCatalogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -200,14 +201,6 @@ namespace Scorganize
             this.RemoveSongButton.Visible = false;
             this.RemoveSongButton.Click += new System.EventHandler(this.RemoveSongButton_Click);
             // 
-            // PageNumberBox
-            // 
-            this.PageNumberBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.PageNumberBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PageNumberBox.Name = "PageNumberBox";
-            this.PageNumberBox.Size = new System.Drawing.Size(36, 25);
-            this.PageNumberBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // ForwardBtn
             // 
             this.ForwardBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -219,6 +212,14 @@ namespace Scorganize
             this.ForwardBtn.Text = "⏵";
             this.ForwardBtn.ToolTipText = "Forward One Page";
             this.ForwardBtn.Click += new System.EventHandler(this.ForwardBtn_Click);
+            // 
+            // PageNumberBox
+            // 
+            this.PageNumberBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.PageNumberBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageNumberBox.Name = "PageNumberBox";
+            this.PageNumberBox.Size = new System.Drawing.Size(36, 25);
+            this.PageNumberBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // BackBtn
             // 
@@ -340,6 +341,8 @@ namespace Scorganize
             // 
             // optionsToolStripMenuItem
             // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteEntireCatalogToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "&Options";
@@ -355,6 +358,13 @@ namespace Scorganize
             this.sideByToolStripMenuItem.Name = "sideByToolStripMenuItem";
             this.sideByToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sideByToolStripMenuItem.Text = "Side By ";
+            // 
+            // deleteEntireCatalogToolStripMenuItem
+            // 
+            this.deleteEntireCatalogToolStripMenuItem.Name = "deleteEntireCatalogToolStripMenuItem";
+            this.deleteEntireCatalogToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.deleteEntireCatalogToolStripMenuItem.Text = "⚠ Delete Entire Catalog";
+            this.deleteEntireCatalogToolStripMenuItem.Click += new System.EventHandler(this.deleteEntireCatalogToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -421,5 +431,6 @@ namespace Scorganize
         private ToolStripMenuItem optionsToolStripMenuItem;
         private ToolStripMenuItem singlePageViewToolStripMenuItem;
         private ToolStripMenuItem sideByToolStripMenuItem;
+        private ToolStripMenuItem deleteEntireCatalogToolStripMenuItem;
     }
 }

@@ -188,15 +188,6 @@ namespace Scorganize
         }
 
         #endregion
-        private MenuStrip menuStrip1;
-        private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem importPDFToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem exitToolStripMenuItem;
-        private ToolStripMenuItem aboutToolStripMenuItem;
-        private ToolStripMenuItem setlistsToolStripMenuItem;
-        private ToolStripMenuItem newSetlistToolStripMenuItem;
-        private ToolStripMenuItem openSetlistToolStripMenuItem;
         private TableLayoutPanel tableLayoutPanel1;
         private ListBox SetListBox;
         private TreeView SetlistTreeview;
