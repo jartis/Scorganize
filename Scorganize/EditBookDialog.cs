@@ -22,6 +22,8 @@ namespace Scorganize
             this.FilenameBox.KeyDown += TextBox_KeyDown;
             this.BookNameTextBox.TextChanged += (sender, args) => { BookName = this.BookNameTextBox.Text; };
             this.FilenameBox.TextChanged += (sender, args) => { FileName = this.FilenameBox.Text; };
+            BookName = String.Empty;
+            FileName = String.Empty;
         }
 
         private void TextBox_KeyDown(object? sender, KeyEventArgs e)

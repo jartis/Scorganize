@@ -8,7 +8,7 @@ namespace Scorganize
 {
     public class ClearableTextBox : TextBox
     {
-        private readonly Label lblTheClose;
+        private readonly Label ClearLabel;
 
         public bool ButtonTextClear { get; set; } = true;
 
@@ -18,23 +18,24 @@ namespace Scorganize
 
             TextChanged += ShowHideX;
 
-            lblTheClose = new Label()
+            ClearLabel = new Label()
             {
                 Location = new Point(100, 0),
                 AutoSize = true,
-                Text = "x",
+                Text = "✕",
                 ForeColor = Color.Gray,
                 Visible = false,
-                Font = new Font("Tahoma", 8.25F),
                 Cursor = Cursors.Arrow
             };
 
-            Controls.Add(lblTheClose);
-            lblTheClose.Click += (ss, ee) => { ((Label)ss).Visible = false; Text = string.Empty; };
-            lblTheClose.BringToFront();
+            Controls.Add(ClearLabel);
+            ClearLabel.Click += (sender, e) => { Text = string.Empty; };
+            ClearLabel.BringToFront();
         }
 
-        private void ShowHideX(object sender, EventArgs e) => lblTheClose.Visible = ButtonTextClear && !string.IsNullOrEmpty(Text);
-        private void PositionX(object sender, EventArgs e) => lblTheClose.Location = new Point(Width - 15, ((Height - lblTheClose.Height) / 2) - 3);
+
+
+        private void ShowHideX(object? sender, EventArgs e) => ClearLabel.Visible = ButtonTextClear && !string.IsNullOrEmpty(Text);
+        private void PositionX(object? sender, EventArgs e) => ClearLabel.Location = new Point(Width - 15, ((Height - ClearLabel.Height) / 2) - 3);
     }
 }

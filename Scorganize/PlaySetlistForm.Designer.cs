@@ -36,18 +36,25 @@ namespace Scorganize
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlaySetlistForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.SetlistListbox = new System.Windows.Forms.ListBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.DisplayTable = new System.Windows.Forms.TableLayoutPanel();
             this.LeftBox = new System.Windows.Forms.PictureBox();
             this.RightBox = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.ForwardBtn = new System.Windows.Forms.ToolStripButton();
             this.BackBtn = new System.Windows.Forms.ToolStripButton();
             this.ExportPdfButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.singlePageViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sideBySideViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.SinglePageScrollMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TwoPageScrollMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.DisplayTable.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LeftBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RightBox)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -68,7 +75,7 @@ namespace Scorganize
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
+            this.splitContainer1.Panel2.Controls.Add(this.DisplayTable);
             this.splitContainer1.Panel2.Controls.Add(this.toolStrip1);
             this.splitContainer1.Panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.splitContainer1.Size = new System.Drawing.Size(800, 450);
@@ -85,20 +92,21 @@ namespace Scorganize
             this.SetlistListbox.Size = new System.Drawing.Size(187, 446);
             this.SetlistListbox.TabIndex = 0;
             // 
-            // tableLayoutPanel1
+            // DisplayTable
             // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.LeftBox, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.RightBox, 1, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 25);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(601, 421);
-            this.tableLayoutPanel1.TabIndex = 3;
+            this.DisplayTable.BackColor = System.Drawing.Color.Black;
+            this.DisplayTable.ColumnCount = 2;
+            this.DisplayTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DisplayTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DisplayTable.Controls.Add(this.LeftBox, 0, 0);
+            this.DisplayTable.Controls.Add(this.RightBox, 1, 0);
+            this.DisplayTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DisplayTable.Location = new System.Drawing.Point(0, 25);
+            this.DisplayTable.Name = "DisplayTable";
+            this.DisplayTable.RowCount = 1;
+            this.DisplayTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DisplayTable.Size = new System.Drawing.Size(601, 421);
+            this.DisplayTable.TabIndex = 3;
             // 
             // LeftBox
             // 
@@ -106,6 +114,7 @@ namespace Scorganize
             this.LeftBox.Location = new System.Drawing.Point(3, 3);
             this.LeftBox.Name = "LeftBox";
             this.LeftBox.Size = new System.Drawing.Size(294, 415);
+            this.LeftBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.LeftBox.TabIndex = 0;
             this.LeftBox.TabStop = false;
             // 
@@ -115,6 +124,7 @@ namespace Scorganize
             this.RightBox.Location = new System.Drawing.Point(303, 3);
             this.RightBox.Name = "RightBox";
             this.RightBox.Size = new System.Drawing.Size(295, 415);
+            this.RightBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.RightBox.TabIndex = 1;
             this.RightBox.TabStop = false;
             // 
@@ -123,7 +133,9 @@ namespace Scorganize
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ForwardBtn,
             this.BackBtn,
-            this.ExportPdfButton});
+            this.ExportPdfButton,
+            this.toolStripSeparator1,
+            this.toolStripDropDownButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(601, 25);
@@ -165,6 +177,62 @@ namespace Scorganize
             this.ExportPdfButton.Text = "Export Setlist as PDF";
             this.ExportPdfButton.Click += new System.EventHandler(this.ExportPdfButton_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.singlePageViewToolStripMenuItem,
+            this.sideBySideViewToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.SinglePageScrollMenuItem,
+            this.TwoPageScrollMenuItem});
+            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(62, 22);
+            this.toolStripDropDownButton1.Text = "Options";
+            // 
+            // singlePageViewToolStripMenuItem
+            // 
+            this.singlePageViewToolStripMenuItem.CheckOnClick = true;
+            this.singlePageViewToolStripMenuItem.Name = "singlePageViewToolStripMenuItem";
+            this.singlePageViewToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.singlePageViewToolStripMenuItem.Text = "Single Page View";
+            // 
+            // sideBySideViewToolStripMenuItem
+            // 
+            this.sideBySideViewToolStripMenuItem.Checked = true;
+            this.sideBySideViewToolStripMenuItem.CheckOnClick = true;
+            this.sideBySideViewToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sideBySideViewToolStripMenuItem.Name = "sideBySideViewToolStripMenuItem";
+            this.sideBySideViewToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.sideBySideViewToolStripMenuItem.Text = "Side By Side View";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(191, 6);
+            // 
+            // SinglePageScrollMenuItem
+            // 
+            this.SinglePageScrollMenuItem.Checked = true;
+            this.SinglePageScrollMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SinglePageScrollMenuItem.Name = "SinglePageScrollMenuItem";
+            this.SinglePageScrollMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.SinglePageScrollMenuItem.Text = "Single Page Scroll";
+            // 
+            // TwoPageScrollMenuItem
+            // 
+            this.TwoPageScrollMenuItem.CheckOnClick = true;
+            this.TwoPageScrollMenuItem.Name = "TwoPageScrollMenuItem";
+            this.TwoPageScrollMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.TwoPageScrollMenuItem.Text = "Two Page (Book) Scroll";
+            // 
             // PlaySetlistForm
             // 
             this.AllowDrop = true;
@@ -181,7 +249,7 @@ namespace Scorganize
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.DisplayTable.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LeftBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RightBox)).EndInit();
             this.toolStrip1.ResumeLayout(false);
@@ -194,12 +262,19 @@ namespace Scorganize
 
         private SplitContainer splitContainer1;
         private ToolStrip toolStrip1;
-        private TableLayoutPanel tableLayoutPanel1;
+        private TableLayoutPanel DisplayTable;
         private PictureBox LeftBox;
         private PictureBox RightBox;
         private ToolStripButton ForwardBtn;
         private ToolStripButton BackBtn;
         private ListBox SetlistListbox;
         private ToolStripButton ExportPdfButton;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripMenuItem singlePageViewToolStripMenuItem;
+        private ToolStripMenuItem sideBySideViewToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem SinglePageScrollMenuItem;
+        private ToolStripMenuItem TwoPageScrollMenuItem;
     }
 }

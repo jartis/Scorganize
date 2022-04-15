@@ -35,7 +35,7 @@ namespace Scorganize
             }
         }
 
-        private void SetListBox_MouseDown(object sender, MouseEventArgs e)
+        private void SetListBox_MouseDown(object? sender, MouseEventArgs e)
         {
             if (e.Clicks == 1)
             {
@@ -46,13 +46,14 @@ namespace Scorganize
             }
         }
 
-        private void SetListBox_DragOver(object sender, DragEventArgs e)
+        private void SetListBox_DragOver(object? sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
         }
 
-        private void SetListBox_DragDrop(object sender, DragEventArgs e)
+        private void SetListBox_DragDrop(object? sender, DragEventArgs e)
         {
+            if (e.Data is null) { return; }
             Point point = SetListBox.PointToClient(new Point(e.X, e.Y));
             int index = this.SetListBox.IndexFromPoint(point);
             if (index < 0) index = this.SetListBox.Items.Count - 1;
@@ -107,7 +108,7 @@ namespace Scorganize
                     using (StreamReader r = new StreamReader(form.FileName))
                     {
                         string jsonString = r.ReadToEnd();
-                        Setlist l = JsonSerializer.Deserialize<Setlist>(jsonString);
+                        Setlist l = JsonSerializer.Deserialize<Setlist>(jsonString) ?? new Setlist();
                         foreach (SetlistEntry entry in l.Entries)
                         {
                             SetListBox.Items.Add(entry);
@@ -129,9 +130,10 @@ namespace Scorganize
                 try
                 {
                     Setlist list = new Setlist();
-                    foreach (var sle in SetListBox.Items)
+                    foreach (object? sle in SetListBox.Items)
                     {
-                        list.Add(sle as SetlistEntry);
+                        if (sle is null) { continue; }
+                        list.Add((SetlistEntry)sle);
                     }
                     string setlistString = JsonSerializer.Serialize(list);
                     using (FileStream fs = (FileStream)saveFileDialog.OpenFile())
