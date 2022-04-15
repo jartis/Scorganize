@@ -154,8 +154,8 @@ namespace Scorganize
                 document.Outlines.Clear();
                 foreach (Song song in Songs.OrderBy(s => s.FirstPage))
                 {
-                    int bookPage = Math.Min(Math.Max(song.FirstPage, 0), pageCount);
-                    document.Outlines.Add(new PdfOutline(song.Title, document.Pages[bookPage]));
+                    int bookPage = Math.Min(Math.Max(song.FirstPage-1, 0), pageCount);
+                    document.Outlines.Add(new PdfOutline(song.Title, document.Pages[bookPage], true));
                 }
                 document.Save(Filename);
             }

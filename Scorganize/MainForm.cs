@@ -17,6 +17,10 @@ namespace Scorganize
         private Graphics rightG;
         private PdfiumViewer.PdfDocument? curDoc;
         private int _curPage = 1;
+        private int PageDelta = 1;
+        private PageDisplay pd = PageDisplay.Double;
+
+
         private int curPage
         {
             get
@@ -42,27 +46,87 @@ namespace Scorganize
 
             GetConfig();
 
-            this.KeyPreview = true;
-            this.KeyDown += new KeyEventHandler(MainForm_KeyDown);
+            KeyPreview = true;
+            KeyDown += new KeyEventHandler(MainForm_KeyDown);
             SetStatus = new SetStatusDelegate(_setStatus);
-            this.AllowDrop = true;
-            this.DragEnter += MainForm_DragEnter;
-            this.DragDrop += MainForm_DragDrop;
-            this.CatalogTreeView.NodeMouseClick += MainForm_TreeNodeClicked;
-            this.CatalogTreeView.NodeMouseClick += (sender, args) => this.CatalogTreeView.SelectedNode = args.Node;
-            this.SearchBox.TextChanged += SearchBox_TextChanged;
+            AllowDrop = true;
+            DragEnter += MainForm_DragEnter;
+            DragDrop += MainForm_DragDrop;
+            CatalogTreeView.NodeMouseClick += MainForm_TreeNodeClicked;
+            CatalogTreeView.NodeMouseClick += (sender, args) => this.CatalogTreeView.SelectedNode = args.Node;
+            SearchBox.TextChanged += SearchBox_TextChanged;
             Cursor.Current = Cursors.Default;
             MainCatalog = new Catalog();
             random = new Random();
             leftG = LeftBox.CreateGraphics();
             rightG = RightBox.CreateGraphics();
-            this.splitContainer1.SplitterMoved += new SplitterEventHandler((sender, e) => this.Invalidate());
-            this.PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
+            splitContainer1.SplitterMoved += new SplitterEventHandler((sender, e) => this.Invalidate());
+            PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
             CatalogTreeView.KeyDown += CatalogTreeView_KeyDown;
-            this.MouseWheel += MainForm_MouseWheel;
-            this.FormClosing += MainForm_FormClosing;
+            MouseWheel += MainForm_MouseWheel;
+            FormClosing += MainForm_FormClosing;
             PageNumberBox.TextChanged += PageNumberBox_TextChanged;
             nodeCache = new List<TreeNode>();
+            singlePageViewToolStripMenuItem.Click += PageViewClickHandler;
+            sideBySideToolStripMenuItem.Click += PageViewClickHandler;
+            SinglePageMenuItem.Click += ScrollClickHandler;
+            TwoPageMenuItem.Click += ScrollClickHandler;
+        }
+
+        private void PageViewClickHandler(object? sender, EventArgs e)
+        {
+            if (sender == singlePageViewToolStripMenuItem)
+            {
+                pd = PageDisplay.Single;
+                singlePageViewToolStripMenuItem.Checked = true;
+                sideBySideToolStripMenuItem.Checked = false;
+                RightBox.Visible = false;
+
+                // Don't scroll two pages if you can only see one!
+                PageDelta = 1;
+                SinglePageMenuItem.Checked = true;
+                TwoPageMenuItem.Checked = false;
+                TwoPageMenuItem.Enabled = false;
+            }
+            else if (sender == sideBySideToolStripMenuItem)
+            {
+                pd = PageDisplay.Double;
+                singlePageViewToolStripMenuItem.Checked = false;
+                sideBySideToolStripMenuItem.Checked = true;
+                RightBox.Visible = true;
+                // Don't forget to turn this back on
+                TwoPageMenuItem.Enabled = true;
+            }
+            UpdateTabPanel();
+        }
+
+        private void ScrollClickHandler(object? sender, EventArgs e)
+        {
+            if (sender == SinglePageMenuItem)
+            {
+                PageDelta = 1;
+                SinglePageMenuItem.Checked = true;
+                TwoPageMenuItem.Checked = false;
+            }
+            else if (sender == TwoPageMenuItem)
+            {
+                PageDelta = 2;
+                SinglePageMenuItem.Checked = false;
+                TwoPageMenuItem.Checked = true;
+            }
+        }
+
+        private void UpdateTabPanel()
+        {
+            if (pd == PageDisplay.Single)
+            {
+                this.DisplayTable.ColumnCount = 1;
+            }
+            else if (pd == PageDisplay.Double)
+            {
+                this.DisplayTable.ColumnCount = 2;
+            }
+            Invalidate();
         }
 
         private void PageNumberBox_TextChanged(object? sender, EventArgs e)
@@ -138,7 +202,7 @@ namespace Scorganize
         private void changePage(int change)
         {
             if (curDoc is null || curBook is null) { return; }
-            curPage += change;
+            curPage += (change * PageDelta);
             curPage = Math.Max(Math.Min(curPage, curDoc.PageCount - 1), 1);
             PageNumberBox.Text = curPage.ToString();
         }
@@ -378,22 +442,28 @@ namespace Scorganize
             Thread t = new Thread(() =>
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (string path in files)
-                {
-                    // get the file attributes for file or directory
-                    FileAttributes attr = File.GetAttributes(path);
-
-                    if (attr.HasFlag(FileAttributes.Directory))
-                    {
-                        ProcessDirectory(path);
-                    }
-                    else
-                    {
-                        ProcessSingleFile(path, this);
-                    }
-                }
+                ProcessPathCollection(files, this);
             });
             t.Start();
+        }
+
+        public void ProcessPathCollection(string[] files, MainForm f)
+        {
+            foreach (string path in files)
+            {
+                // get the file attributes for file or directory
+                FileAttributes attr = File.GetAttributes(path);
+
+                if (attr.HasFlag(FileAttributes.Directory))
+                {
+                    ProcessDirectory(path);
+                }
+                else
+                {
+                    ProcessSingleFile(path, this);
+                }
+            }
+            f.Invoke(f.SetStatus, new Object[] { "Ready", 0 });
         }
 
         private void HandleDrag(string[] paths, MainForm f)
@@ -417,8 +487,18 @@ namespace Scorganize
                 {
                     curDoc = PdfiumViewer.PdfDocument.Load(curBook.Filename);
                 }
-                LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
-                RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
+
+                if (pd == PageDisplay.Single)
+                {
+                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage - 1, 0), curDoc.PageCount), 100f, 100f, false);
+                }
+                else if (pd == PageDisplay.Double)
+                {
+                    //var width = LeftBox.Width;
+                    //var height = LeftBox.Height;
+                    LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), 100f, 100f, false);
+                    RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), 100f, 100f, false);
+                }
             }
             base.OnPaint(e);
         }
@@ -516,16 +596,6 @@ namespace Scorganize
             }
         }
 
-        private void ForwardBtn_Click(object sender, EventArgs e)
-        {
-            changePage(1);
-        }
-
-        private void BackBtn_Click(object sender, EventArgs e)
-        {
-            changePage(-1);
-        }
-
         private void RemoveSongButton_Click(object sender, EventArgs e)
         {
             DialogResult confirmResult = MessageBox.Show("Are you sure want to remove this song bookmark?", "", MessageBoxButtons.YesNo);
@@ -559,27 +629,7 @@ namespace Scorganize
             }
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (AboutBox abt = new AboutBox())
-            {
-                abt.ShowDialog(this);
-            }
-        }
 
-        private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog? form = new OpenFileDialog())
-            {
-                form.Multiselect = true;
-                form.Filter = "PDF Files|*.pdf";
-                DialogResult result = form.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    HandleDrag(form.FileNames, this);
-                }
-            }
-        }
 
         public void ProcessDirectory(string targetDirectory)
         {
@@ -683,6 +733,46 @@ namespace Scorganize
             }
         }
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (AboutBox abt = new AboutBox())
+            {
+                abt.ShowDialog(this);
+            }
+        }
+
+        private void importPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog? form = new OpenFileDialog())
+            {
+                form.Multiselect = true;
+                form.Filter = "PDF Files|*.pdf";
+                DialogResult result = form.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    ProcessPathCollection(form.FileNames, this);
+                }
+            }
+        }
+
+        private void ForwardBtn_Click(object sender, EventArgs e)
+        {
+            changePage(1);
+        }
+
+        private void BackBtn_Click(object sender, EventArgs e)
+        {
+            changePage(-1);
+        }
+
         #endregion
+
+
+    }
+
+    public enum PageDisplay
+    {
+        Single,
+        Double,
     }
 }

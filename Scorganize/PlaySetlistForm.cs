@@ -14,7 +14,9 @@ namespace Scorganize
         private Graphics rightG;
         private PdfiumViewer.PdfDocument? curDoc;
         private int curPage = 1;
+        private int pagedelta = 1;
         private string tempfile;
+        private PageDisplay pd;
 
         public PlaySetlistForm()
         {
@@ -33,6 +35,27 @@ namespace Scorganize
             this.SetlistListbox.DisplayMember = "Title";
             setlist = new Setlist();
             tempfile = String.Empty;
+            pd = PageDisplay.Double;
+            sideBySideViewToolStripMenuItem.Click += PageViewClickHandler;
+            singlePageViewToolStripMenuItem.Click += PageViewClickHandler;
+            SinglePageScrollMenuItem.Click += ScrollClickHandler;
+            TwoPageScrollMenuItem.Click += ScrollClickHandler;
+        }
+
+        private void ScrollClickHandler(object? sender, EventArgs e)
+        {
+            if (sender == SinglePageScrollMenuItem)
+            {
+                pagedelta = 1;
+                SinglePageScrollMenuItem.Checked = true;
+                TwoPageScrollMenuItem.Checked = false;
+            }
+            else if (sender == TwoPageScrollMenuItem)
+            {
+                pagedelta = 2;
+                SinglePageScrollMenuItem.Checked = false;
+                TwoPageScrollMenuItem.Checked = true;
+            }
         }
 
         // TODO: Add internal bookmarks to this document, in case of exporting
@@ -135,28 +158,76 @@ namespace Scorganize
         private void PageForward()
         {
             if (curDoc is null) { return; }
-            curPage = Math.Min(curPage + 1, curDoc.PageCount - 1);
+            curPage = Math.Min(curPage + pagedelta, curDoc.PageCount - 1);
             Invalidate();
         }
 
         private void PageBack()
         {
             if (curDoc is null) { return; }
-            curPage = Math.Max(curPage - 1, 1);
+            curPage = Math.Max(curPage - pagedelta, 1);
             Invalidate();
         }
 
+        #region Event Handlers
 
         protected override void OnPaint(PaintEventArgs e)
         {
             if (curDoc != null)
             {
-                LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), LeftBox.Width, LeftBox.Height, leftG.DpiX, leftG.DpiY, false);
-                RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), RightBox.Width, RightBox.Height, rightG.DpiX, rightG.DpiY, false);
+                if (pd == PageDisplay.Single)
+                {
+                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage - 1, 0), curDoc.PageCount), 100f, 100f, false);
+                }
+                else if (pd == PageDisplay.Double)
+                {
+                    //var width = LeftBox.Width;
+                    //var height = LeftBox.Height;
+                    LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), 100f, 100f, false);
+                    RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), 100f, 100f, false);
+                }
             }
             base.OnPaint(e);
         }
 
+        private void PageViewClickHandler(object? sender, EventArgs e)
+        {
+            if (sender == singlePageViewToolStripMenuItem)
+            {
+                pd = PageDisplay.Single;
+                singlePageViewToolStripMenuItem.Checked = true;
+                sideBySideViewToolStripMenuItem.Checked = false;
+                RightBox.Visible = false;
+
+                // Don't scroll two pages when in single view
+                pagedelta = 1;
+                SinglePageScrollMenuItem.Checked = true;
+                TwoPageScrollMenuItem.Checked = false;
+                TwoPageScrollMenuItem.Enabled = false;
+            }
+            else if (sender == sideBySideViewToolStripMenuItem)
+            {
+                pd = PageDisplay.Double;
+                singlePageViewToolStripMenuItem.Checked = false;
+                sideBySideViewToolStripMenuItem.Checked = true;
+                RightBox.Visible = true;
+                TwoPageScrollMenuItem.Enabled = true;
+            }
+            UpdateTabPanel();
+        }
+
+        private void UpdateTabPanel()
+        {
+            if (pd == PageDisplay.Single)
+            {
+                this.DisplayTable.ColumnCount = 1;
+            }
+            else if (pd == PageDisplay.Double)
+            {
+                this.DisplayTable.ColumnCount = 2;
+            }
+            Invalidate();
+        }
 
         private void ForwardBtn_Click(object sender, EventArgs e)
         {
@@ -193,5 +264,7 @@ namespace Scorganize
                 }
             }
         }
+
+        #endregion
     }
 }
