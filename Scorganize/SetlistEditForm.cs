@@ -70,7 +70,7 @@ namespace Scorganize
                 TreeTag tt = (TreeTag)e.Node.Tag;
                 if (tt.tagType == TagType.Song)
                 {
-                    SetlistEntry s = new SetlistEntry(tt.Title, tt.Filename, tt.Page, tt.NumPages);
+                    SetlistEntry s = new SetlistEntry(tt.Title, tt.Filename, tt.Page, tt.NumPages, 1);
                     SetListBox.Items.Add(s);
                     listSaved = false;
                 }
@@ -135,6 +135,7 @@ namespace Scorganize
                         if (sle is null) { continue; }
                         list.Add((SetlistEntry)sle);
                     }
+                    list.ResetPageNumbers();
                     string setlistString = JsonSerializer.Serialize(list);
                     using (FileStream fs = (FileStream)saveFileDialog.OpenFile())
                     {
@@ -195,7 +196,7 @@ namespace Scorganize
             TreeTag tt = (TreeTag)SetlistTreeview.SelectedNode.Tag;
             if (tt.tagType == TagType.Song)
             {
-                SetlistEntry s = new SetlistEntry(tt.Title, tt.Filename, tt.Page, tt.NumPages);
+                SetlistEntry s = new SetlistEntry(tt.Title, tt.Filename, tt.Page, tt.NumPages, 1);
                 SetListBox.Items.Add(s);
                 listSaved = false;
             }

@@ -40,6 +40,17 @@ namespace Scorganize
             singlePageViewToolStripMenuItem.Click += PageViewClickHandler;
             SinglePageScrollMenuItem.Click += ScrollClickHandler;
             TwoPageScrollMenuItem.Click += ScrollClickHandler;
+            SetlistListbox.Click += SetlistListbox_Click;
+        }
+
+        private void SetlistListbox_Click(object? sender, EventArgs e)
+        {
+            if (SetlistListbox.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            curPage = ((SetlistEntry)(SetlistListbox.SelectedItem)).SetlistPage;
+            Invalidate();
         }
 
         private void ScrollClickHandler(object? sender, EventArgs e)
@@ -81,6 +92,7 @@ namespace Scorganize
                 }
             }
             PdfDocument? setlistDoc = new PdfDocument();
+            int setlistBookPage = 0;
             foreach (SetlistEntry entry in setlist.Entries)
             {
                 using (PdfDocument bookDoc = PdfReader.Open(entry.Filename, PdfDocumentOpenMode.Import))
@@ -88,7 +100,9 @@ namespace Scorganize
                     for (int pg = entry.StartPage; pg < entry.StartPage + entry.NumPages; pg++)
                     {
                         setlistDoc.AddPage(bookDoc.Pages[pg-1]);
+                        setlistBookPage++;
                     }
+                    setlistDoc.Outlines.Add(new PdfOutline(entry.Title, setlistDoc.Pages[setlistBookPage - 1], true));
                 }
             }
             tempfile = Path.GetTempFileName();
@@ -177,14 +191,14 @@ namespace Scorganize
             {
                 if (pd == PageDisplay.Single)
                 {
-                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage - 1, 0), curDoc.PageCount), 100f, 100f, false);
+                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage, 0), curDoc.PageCount-1), 150f, 150f, false);
                 }
                 else if (pd == PageDisplay.Double)
                 {
                     //var width = LeftBox.Width;
                     //var height = LeftBox.Height;
-                    LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), 100f, 100f, false);
-                    RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), 100f, 100f, false);
+                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage, 0), curDoc.PageCount-1), 150f, 150f, false);
+                    RightBox.Image = curDoc.Render(Math.Min(Math.Max(curPage+1, 0), curDoc.PageCount-1), 150f, 150f, false);
                 }
             }
             base.OnPaint(e);

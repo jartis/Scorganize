@@ -490,14 +490,14 @@ namespace Scorganize
 
                 if (pd == PageDisplay.Single)
                 {
-                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage - 1, 0), curDoc.PageCount), 100f, 100f, false);
+                    LeftBox.Image = curDoc.Render(Math.Min(Math.Max(curPage - 1, 0), curDoc.PageCount), 150f, 150f, false);
                 }
                 else if (pd == PageDisplay.Double)
                 {
                     //var width = LeftBox.Width;
                     //var height = LeftBox.Height;
-                    LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), 100f, 100f, false);
-                    RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), 100f, 100f, false);
+                    LeftBox.Image = curDoc.Render(Math.Max(curPage - 1, 0), 150f, 150f, false);
+                    RightBox.Image = curDoc.Render(Math.Min(curPage, curDoc.PageCount), 150f, 150f, false);
                 }
             }
             base.OnPaint(e);
